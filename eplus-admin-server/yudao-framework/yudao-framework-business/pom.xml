@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.iocoder.boot</groupId>
+        <artifactId>yudao-framework</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>yudao-framework-business</artifactId>
+    <packaging>pom</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>
+        业务组件聚合模块
+        包含: 数据字典、操作日志、数据权限、IP解析、错误码等业务功能
+    </description>
+
+    <dependencies>
+        <!-- 数据字典 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-dict</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- 操作日志 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-operatelog</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- 数据权限 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-data-permission</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- IP 解析 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-ip</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- 错误码 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-error-code</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- 短信 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-sms</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- 数据脱敏 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-desensitize</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- 工作流 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-flowable</artifactId>
+            <version>${revision}</version>
+        </dependency>
+    </dependencies>
+
+</project>

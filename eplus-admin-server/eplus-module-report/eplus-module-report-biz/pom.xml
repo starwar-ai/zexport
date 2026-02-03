@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>cn.iocoder.boot</groupId>
+        <artifactId>eplus-module-report</artifactId>
+        <version>${revision}</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>eplus-module-report-biz</artifactId>
+    <packaging>jar</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>
+        report 模块,主要实现数据可视化报表等功能:
+        1. 基于「poi-tl」实现,打印设计、报表设计等。
+    </description>
+
+    <dependencies>
+        <!-- ========== API 聚合模块 ========== -->
+        <!-- 一个依赖即可获得所有业务模块的API,包括本模块的report-api -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-api-aggregator</artifactId>
+        <version>${revision}</version>
+            <type>pom</type></dependency>
+
+        <!-- ========== 框架聚合模块 ========== -->
+        <!-- 核心框架: Web + Security + MyBatis + Excel + Common -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-framework-core</artifactId>
+        <version>${revision}</version>
+            <type>pom</type></dependency>
+
+        <!-- 业务组件: 字典 + 日志 + 权限 + IP等 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-framework-business</artifactId>
+        <version>${revision}</version>
+            <type>pom</type></dependency>
+
+        <!-- ========== 公共组件 ========== -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-common</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- ========== 第三方库 ========== -->
+        <!-- 打印相关 -->
+        <dependency>
+            <groupId>com.deepoove</groupId>
+            <artifactId>poi-tl</artifactId>
+            <version>1.12.2</version>
+        </dependency>
+
+        <!-- word转pdf -->
+        <dependency>
+            <groupId>com.aspose</groupId>
+            <artifactId>aspose-words</artifactId>
+            <version>15.12.0-jdk16</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/libs/aspose-words-15.12.0-jdk16.jar</systemPath>
+        </dependency>
+
+        <!-- ========== 测试依赖 ========== -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

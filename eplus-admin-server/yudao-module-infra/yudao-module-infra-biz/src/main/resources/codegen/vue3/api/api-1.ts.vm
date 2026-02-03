@@ -1,0 +1,59 @@
+import request from '@/config/axios'
+#set ($baseURL = "/${table.moduleName}/${simpleClassName_strikeCase}")
+
+
+export interface ${simpleClassName}VO {
+    #foreach ($column in $columns)
+        #if ($column.createOperation || $column.updateOperation)
+            #if(${column.javaType.toLowerCase()} == "long" || ${column.javaType.toLowerCase()} == "integer" || ${column.javaType.toLowerCase()} == "short" || ${column.javaType.toLowerCase()} == "double" || ${column.javaType.toLowerCase()} == "bigdecimal")
+                    ${column.javaField}: number
+            #elseif(${column.javaType.toLowerCase()} == "date" || ${column.javaType.toLowerCase()} == "localdatetime")
+                    ${column.javaField}: Date
+            #elseif(${column.javaType.toLowerCase()} == "string")
+                    ${column.javaField}: string
+            #else
+                    ${column.javaField}: any
+            #end
+        #end
+    #end
+}
+
+// 查询供应商信息分页
+export const get${simpleClassName}Page = async (params) => {
+    return await request.get({ url: `${baseURL}/page`, params })
+}
+
+// 查询供应商信息详情
+export const get${simpleClassName} = async (params) => {
+    return await request.get({ url: `${baseURL}/detail`, params })
+}
+
+//审核模块的获取详情
+export const getAudit${simpleClassName} = async (params) => {
+    return await request.get({ url: '${baseURL}/audit-detail', params })
+}
+
+// 新增供应商信息
+export const create${simpleClassName} = async (data: ${simpleClassName}VO) => {
+    return await request.post({ url: `${baseURL}/create`, data })
+}
+
+// 修改供应商信息
+export const update${simpleClassName} = async (data: ${simpleClassName}VO) => {
+    return await request.put({ url: `${baseURL}/update`, data })
+}
+
+// 删除供应商信息
+export const delete${simpleClassName} = async (id: number) => {
+    return await request.delete({ url: `${baseURL}/delete?id=` + id })
+}
+
+// 导出供应商信息 Excel
+export const export${simpleClassName} = async (params) => {
+    return await request.download({ url: `${baseURL}/export-excel`, params })
+}
+
+//供应商提交
+export const submit${simpleClassName} = async (id) => {
+    return await request.put({ url: `${baseURL}/submit?${simpleClassName}Id=${id}` })
+}

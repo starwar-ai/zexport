@@ -1,0 +1,420 @@
+package com.syj.eplus.framework.common.entity;
+
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.syj.eplus.framework.common.config.handler.JsonWeightTypeHandler;
+import com.syj.eplus.framework.common.config.handler.LongListTypeHandler;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Data
+public class SplitPurchase {
+    /**
+     * 主键
+     */
+    @TableId
+    private Long id;
+    /**
+     * 版本
+     */
+    private Integer ver;
+    /**
+     * 序号
+     */
+    private Integer sortNum;
+
+    /**
+     * 一级拆分序号
+     */
+    private Integer oneSplitNum;
+
+    /**
+     * 二级拆分序号
+     */
+    private Integer twoSplitNum;
+
+    /**
+     * 三级拆分序号
+     */
+    private Integer threeSplitNum;
+
+    /**
+     * 组合产品父级主键
+     */
+    private Integer sourceId;
+
+    /**
+     * 明细层级
+     */
+    private Integer levels;
+    /**
+     * 产品id
+     */
+    private Long skuId;
+    /**
+     * 产品编号
+     */
+    private String skuCode;
+    /**
+     * 产品名称
+     */
+    private String skuName;
+
+    /**
+     * 图片
+     */
+    private SimpleFile mainPicture;
+    /**
+     * 客户id
+     */
+    private Long custId;
+    /**
+     * 客户编号
+     */
+    private String custCode;
+    /**
+     * 客户货号
+     */
+    private String cskuCode;
+    /**
+     * 销售数量
+     */
+    private Integer saleQuantity;
+    /**
+     * 锁定数量
+     */
+    private Integer currentLockQuantity;
+
+    /**
+     * 待采购数量
+     */
+    private Integer needPurQuantity;
+
+    /**
+     * 下单主体-主键
+     */
+    private Long purchaseCompanyId;
+
+    /**
+     * 下单主体-名称
+     */
+    private String purchaseCompanyName;
+
+    /**
+     * 供应商id
+     */
+    private Long venderId;
+    /**
+     * 供应商编号
+     */
+    private String venderCode;
+    /**
+     * 仓库id
+     */
+    private Long stockId;
+    /**
+     * 仓库编号
+     */
+    private String stockCode;
+    /**
+     * 采购计划id
+     */
+    private Long purchasePlanId;
+    /**
+     * 采购计划编号
+     */
+    private String purchasePlanCode;
+    /**
+     * 包装价
+     */
+    private JsonAmount packagingPrice;
+    /**
+     * 运费
+     */
+    private JsonAmount shippingPrice;
+    /**
+     * 采购单价
+     */
+    private JsonAmount unitPrice;
+    /**
+     * 总价
+     */
+    private JsonAmount totalPrice;
+    /**
+     * 含税总价
+     */
+    private JsonAmount withTaxPrice;
+    /**
+     * 税率
+     */
+    private BigDecimal taxRate;
+    /**
+     * 采购类型
+     */
+    private Integer purchaseType;
+    /**
+     * 内箱装量
+     */
+    private Integer qtyPerInnerbox;
+    /**
+     * 外箱装量
+     */
+    private Integer qtyPerOuterbox;
+    /**
+     * 包装规格长度
+     */
+    private BigDecimal packageLength;
+    /**
+     * 包装规格宽度
+     */
+    private BigDecimal packageWidth;
+    /**
+     * 包装规格高度
+     */
+    private BigDecimal packageHeight;
+    /**
+     * 包装规格单位
+     */
+    private Integer packageUnit;
+    /**
+     * 单品毛重
+     */
+    @TableField(typeHandler = JsonWeightTypeHandler.class)
+    private JsonWeight singleGrossweight;
+    /**
+     * 转合同状态
+     */
+    private Integer convertedFlag;
+    /**
+     * 备注
+     */
+    private String remark;
+    /**
+     * 采购员id
+     */
+    private Long purchaseUserId;
+    /**
+     * 采购员姓名
+     */
+    private String purchaseUserName;
+    /**
+     * 采购员部门id
+     */
+    private Long purchaseUserDeptId;
+    /**
+     * 采购员部门名称
+     */
+    private String purchaseUserDeptName;
+    /**
+     * 工厂货号
+     */
+    private String venderProdCode;
+    /**
+     * 报价日期
+     */
+    private LocalDateTime quoteDate;
+    /**
+     * 是否含运费
+     */
+    private Integer freightFlag;
+    /**
+     * 是否含包装
+     */
+    private Integer packageFlag;
+    /**
+     * 包装方式
+     */
+    @TableField(typeHandler = LongListTypeHandler.class)
+    private List<Long> packageType;
+    /**
+     * 币种
+     */
+    private String currency;
+    /**
+     * 是否含税
+     */
+    private Integer faxFlag;
+    /**
+     * 最小起购量
+     */
+    private Integer moq;
+    /**
+     * 是否赠品
+     */
+    private Integer freeFlag;
+    /**
+     * 箱数
+     */
+    private Integer boxCount;
+    /**
+     * 采购模式
+     */
+    private Integer purchaseModel;
+
+    /**
+     * 产品类型
+     */
+    private Integer skuType;
+
+    /**
+     * 采购链接
+     */
+    private String purchaseUrl;
+    /**
+     * 外销合同id
+     */
+    private Long saleContractId;
+    /**
+     * 外销合同编号
+     */
+    private String saleContractCode;
+    /**
+     * 是否通用辅料
+     */
+    private Integer auxiliarySkuFlag;
+    /**
+     * 辅料采购类型
+     */
+    private Integer auxiliarySkuType;
+    /**
+     * 规格描述
+     */
+    private String specRemark;
+    /**
+     * 附件
+     */
+    private List<SimpleFile> annex;
+
+    /**
+     * 辅料属于的销售合同
+     */
+    private String auxiliarySaleContractCode;
+
+    /**
+     * 辅料属于的采购合同
+     */
+    private String auxiliaryPurchaseContractCode;
+
+    /**
+     * 辅料属于的采购合同产品id
+     */
+    private Long auxiliarySkuId;
+
+    /**
+     * 辅料属于的采购合同产品编号
+     */
+    private String auxiliarySkuCode;
+
+    /**
+     * 辅料属于的采购合同产品客户货号
+     */
+    private String auxiliaryCskuCode;
+    /**
+     * 生成采购单时间
+     */
+    private LocalDateTime convertTime;
+    /**
+     * 计量单位
+     */
+    private String skuUnit;
+    /**
+     * 自主品牌标记
+     */
+    private Integer ownBrandFlag;
+    /**
+     * 客户产品标记
+     */
+    private Integer custProFlag;
+
+    /**
+     * 销售明细主键
+     */
+    private Long saleContractItemId;
+
+    /**
+     * 链路编号
+     */
+    private List<String> linkCodeList;
+
+    /**
+     * 唯一编号
+     */
+    private String uniqueCode;
+
+
+    /**
+     * 来源编号
+     */
+    private String sourceUniqueCode;
+
+    /**
+     * 销售合同明细编号
+     */
+    private String saleItemUniqueCode;
+
+    /**
+     * 拆分主体id
+     */
+    private Long splitCompanyId;
+
+    /**
+     * 拆分主体名称
+     */
+    private String splitCompanyName;
+
+    /**
+     * 外销合同锁定库存数量
+     */
+    private Integer saleLockQuantity;
+
+    /**
+     * 采购计划锁定库存数量
+     */
+    private Integer lockQuantity;
+
+    /**
+     * 作废标识
+     */
+    private Integer cancelFlag;
+
+    /**
+     * 采购合同编号
+     */
+    private String purchaseContractCode;
+
+    /**
+     * 父物料名称
+     */
+    private String parentSkuName;
+
+    /**
+     * 父物料编号
+     */
+    private String parentSkuCode;
+
+    /**
+     * 采购数量
+     */
+    private Integer purchaseQuantity;
+
+    /**
+     * 已转合同数量
+     */
+    private Integer convertedQuantity;
+
+    /**
+     * 规格
+     */
+    /**
+     * 规格
+     */
+    private List<JsonSpecificationEntity> specificationList;
+
+    /**
+     * 是否分箱
+     */
+    private Integer splitBoxFlag;
+}

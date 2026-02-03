@@ -1,0 +1,92 @@
+# ========================================
+# 模块化启动配置
+# ========================================
+# 说明:
+# 1. 通过此配置可以控制哪些业务模块在启动时被加载
+# 2. 核心模块(system、infra、bpm)默认必须启用
+# 3. 业务模块可以按需启用/禁用,以减少启动时间和内存占用
+# 4. 禁用的模块不会被Spring扫描和加载
+
+eplus:
+  modules:
+    # ========== 核心模块 (必需,不可禁用) ==========
+    core:
+      enabled: true
+      modules:
+        - system      # 系统管理
+        - infra       # 基础设施
+        - bpm         # 工作流
+
+    # ========== 业务模块 (可选,按需启用) ==========
+    business:
+      # 全局开关: 是否启用业务模块
+      enabled: true
+
+      # 具体业务模块列表
+      modules:
+        # 供应链管理
+        - scm         # 供应链管理 (Supply Chain Management)
+        - pms         # 产品管理 (Product Management System)
+        - wms         # 仓储管理 (Warehouse Management System)
+
+        # 销售与客户
+        - sms         # 销售管理 (Sales Management System)
+        - crm         # 客户关系管理 (Customer Relationship Management)
+
+        # 财务管理
+        - fms         # 财务管理 (Financial Management System)
+
+        # 质量与文档
+        - qms         # 质量管理 (Quality Management System)
+        - dms         # 文档管理 (Document Management System)
+
+        # 办公与协作
+        - oa          # 办公自动化 (Office Automation)
+        - home        # 首页/工作台
+
+        # 专项管理
+        - ems         # 设备管理 (Equipment Management System)
+        - mms         # 维修管理 (Maintenance Management System)
+        - exms        # 执行管理系统
+        - pjms        # 项目管理系统
+        - dtms        # 数字孪生管理系统
+        - dpms        # 数据平台管理系统
+
+        # 报表
+        - report      # 报表管理
+
+    # ========== 模块禁用示例 ==========
+    # 如需禁用某些模块,可以使用 disabled-modules 配置
+    disabled-modules: []
+    # 示例: 禁用OA和设备管理模块
+    # disabled-modules:
+    #   - oa
+    #   - ems
+
+# ========================================
+# 模块加载配置
+# ========================================
+spring:
+  autoconfigure:
+    # 排除自动配置(可选)
+    # 用于更精细的控制模块加载
+    exclude: []
+
+# ========================================
+# 使用说明
+# ========================================
+# 1. 开发环境: 可以只启用正在开发的模块,提高启动速度
+#    例如: 只启用 scm, pms 模块
+#    eplus.modules.business.modules: [scm, pms]
+#
+# 2. 测试环境: 启用需要测试的模块
+#    例如: 禁用报表和OA模块
+#    eplus.modules.disabled-modules: [report, oa]
+#
+# 3. 生产环境: 根据实际业务需求启用相应模块
+#    建议: 只启用实际使用的模块,减少资源消耗
+#
+# 4. 性能优化建议:
+#    - 小团队/简单业务: 只启用 5-8 个核心业务模块
+#    - 中等规模: 启用 10-15 个模块
+#    - 大型企业: 根据部门/业务线分别部署,每个实例启用不同模块

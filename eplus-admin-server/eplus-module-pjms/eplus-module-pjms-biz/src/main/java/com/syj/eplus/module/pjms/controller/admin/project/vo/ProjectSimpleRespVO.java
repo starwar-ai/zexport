@@ -1,0 +1,26 @@
+package com.syj.eplus.module.pjms.controller.admin.project.vo;
+
+import com.alibaba.excel.annotation.ExcelIgnoreUnannotated;
+import com.alibaba.excel.annotation.ExcelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+@Schema(description = "管理后台 - 项目 Response VO")
+@Data
+@ExcelIgnoreUnannotated
+public class ProjectSimpleRespVO {
+
+    @Schema(description = "主键", requiredMode = Schema.RequiredMode.REQUIRED, example = "31010")
+    @ExcelProperty("主键")
+    private Long id;
+    
+    @Schema(description = "编号")
+    @ExcelProperty("编号")
+    private String code;
+    
+    @Schema(description = "名称", example = "芋艿")
+    @ExcelProperty("名称")
+    private String name;
+
+    
+}

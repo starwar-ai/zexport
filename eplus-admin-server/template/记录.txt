@@ -1,0 +1,30 @@
+导出模版key
+结汇单导出: settlement-form-export
+结汇单导出KANE PL: settlement-form-export-pl
+结汇单导出KANE INV: settlement-form-export-inv
+报关单导出：declaration-form-export
+报关单导出ens : declaration-form-export-ens
+商检单导出：commodity-inspection-form-export
+拉柜通知单导出：container-transportation-form-export
+报价单导出公制导出 ： quotation-form-export
+报价单导出英制导出： quotation-form-export-eng
+外销合同导出word：sale-contract-export-detail
+采购合同导出：purchase-contract-export
+个人报销打印：reimb
+对公付款单打印：payment-app
+入库通知单打印：renotice-print
+验货单导出：quality-inspection-export
+包材采购合同打印：auxiliary-purchase-contract
+出运明细hsCode导出： dms-shipment-hscode
+盘点单导出：wms-stocktake-export
+出运明细/出运计划导出： dms-shipment-detail
+报价单打印：sms_quotation
+报价单打印（带采购）：sms_quotation_purchase
+外销合同打印模板：export-sale-contract
+外销合同导出excel：export-sale-contract-detail
+外销合同hsCode导出excel：export-sale-contract-detail-hscode
+内销合同打印模板：domestic_sale_contract
+内销合同导出：domestic-sale-contract-detail
+付款申请打印模板：scm_payment_apply
+付款申请打印模板（横版）：scm_payment_apply_horizontal
+暂支单打印模板：oa_loan_app

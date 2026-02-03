@@ -1,0 +1,508 @@
+<template>
+  <eplus-form
+          ref="formRef"
+          :id="id"
+          :loading="formLoading"
+          :mode="mode"
+          v-model="formData"
+          :saveAction="{
+                  permi: '${permissionPrefix}:create',
+                  handler: () => submitForm()
+                  }"
+          :submiteAction="{
+                  permi: ['${permissionPrefix}:create', '${permissionPrefix}:update'],
+                  handler: () => submitForm('submit')
+                  }"
+  >
+    #set($htmlLayoutGroups = {})
+    #foreach ($column in $columns)
+      #if (!$htmlLayoutGroups.containsKey($column.htmlLayout))
+        #set($htmlLayoutGroups[$column.htmlLayout] = [])
+      #end
+      #if($column.htmlLayout && $column.htmlLayout != "")
+        #set($layoutGroup = $htmlLayoutGroups[$column.htmlLayout])
+        #set($result=$layoutGroup.add($column))
+      #end
+    #end
+
+    #if($htmlLayoutGroups.entrySet().size() > 0)
+      #foreach ($layoutGroupEntry in $htmlLayoutGroups.entrySet())
+        #if($layoutGroupEntry && !$htmlLayoutGroups.isEmpty() && ${layoutGroupEntry.key} !="" && $layoutGroupEntry.key)
+          <eplus-form-items
+                  title="${layoutGroupEntry.key}"
+                  :formSchemas="${layoutGroupEntry.key}"
+          >
+            #foreach ($column in $layoutGroupEntry.value)
+              $column.htmlLayout
+            #end
+          </eplus-form-items>
+        #end
+      #end
+    #end
+  </eplus-form>
+</template>
+<script setup lang="tsx">
+  import * as ${simpleClassName}Api from '@/api/scm/${classNameVar}'
+  import { EplusFormMode, EplusFormSchema } from '@/components/EplusTemplate'
+  // import { useCountryStore } from '@/store/modules/countrylist'
+  import { getSimpleUserList } from '@/api/system/user'
+  // import { useCountryStore } from '@/store/modules/countrylist'
+  import UploadList from './components/uploadList/index.vue'
+  import PocTable from './components/PocTable.vue'
+  import BankTable from './components/BankTable.vue'
+  import { useAreaTreeStore } from '@/store/modules/areaTree'
+  import { useUserStore } from '@/store/modules/user'
+  import { usePaymentStore } from '@/store/modules/payment'
+  import { DICT_TYPE } from '@/utils/dict'
+
+  import { cloneDeep } from 'lodash-es'
+  defineOptions({
+    name: '${permissionPrefix}'
+  })
+  // const message = useMessage() //顶部tip提示框
+  // const countryListData = useCountryStore()
+  const userInfo = useUserStore()
+  const areaTreeStore = useAreaTreeStore() //省份/城市数据
+  const paymentListData = usePaymentStore() //付款方式表
+
+  const formLoading = ref(false)
+  const UploadRef = ref()
+
+  const pocListRef = ref()
+  const bankaccountListRef = ref()
+  const props = defineProps<{
+    id?: number
+    mode: EplusFormMode
+  }>()
+  const areaTreeList = ref<any[]>([])
+  const { close } = inject('dialogEmits') as {
+    close: () => void
+  }
+  const editFileShow = ref(false)
+  const ${permissionPrefix}List = ref()
+  const queryId: string = (props.id || '') as string
+  const formRef = ref() // 表单 Ref
+  //定义表单初始项
+  const formData: Recordable = ref({
+    pocList: [],
+    bankaccountList: []
+  })
+  const message = useMessage()
+  provide('formData', formData)
+
+  const payableChange = (val) => {
+    console.log(val, 'change')
+  }
+  const disabledDate = (time: Date) => {
+    return time.getTime() < Date.now() - 1000 * 60 * 60 * 24
+  }
+
+    #if($htmlLayoutGroups.entrySet().size() > 0)
+    111
+      #foreach ($layoutGroupEntry in $htmlLayoutGroups.entrySet())
+        #if($layoutGroupEntry && !$htmlLayoutGroups.isEmpty() && $layoutGroupEntry.key !="" && $layoutGroupEntry.key)
+        333
+        const ${layoutGroupEntry.key} = [
+          #foreach ($column in $layoutGroupEntry.value)
+            #if($column.htmlLayout==$layoutGroupEntry.key)
+              {
+                field: '${column.javaField}',
+                label: '${column.columnComment}',
+                #if(${column.htmlType} == "dictSelect")
+                  component: (
+                          <eplus-dict-select
+                                  dictType={DICT_TYPE.$dictType.toUpperCase()}
+                                  style="width:100%"
+                          />
+                  ),
+                #elseif(${column.htmlType} == "apiSelect")
+                  component: (
+                          <eplus-custom-select
+                                  api={}
+                                  label="name"
+                                  value="id"
+                                  placeholder="请选择"
+                          />
+                  ),
+                #elseif(${column.htmlType} == "textarea")
+                  component: <el-input type="textarea" />,
+                #elseif(${column.htmlType} == "radio")
+                  component: <EplusDictRadio dictType={DICT_TYPE.$dictType.toUpperCase()} />,
+                #elseif(${column.htmlType} == "checkbox")
+                  component: <EplusDictCheckbox dictType={DICT_TYPE.$dictType.toUpperCase()} />,
+                #elseif(${column.htmlType} == "datetime")
+                  component: (
+                          <el-date-picker
+                                  type="date"
+                                  value-format="x"
+                                  placeholder="选择${column.columnComment}"
+                                  style="width:100%"
+                          />
+                  ),
+                #else
+                  component: (
+                          <el-input
+                                  placeholder="请输入${column.columnComment}"
+                                  validate-event={false}
+                          />
+                  ),
+                #end
+                #if(${column.requiredFlag})
+                  rules: {
+                    required: true,
+                    message: '#if(${column.htmlType} == "dictSelect" || ${column.htmlType} == "apiSelect")请选择#else请输入#end${column.columnComment}'
+                  }
+                #end
+              },
+            #end
+          #end
+        ]
+        #end
+      #end
+    #end
+
+
+  // {
+  //   field: 'loanDate',
+  //   label: '借款日期',
+  //
+  //   component: (
+  //     <el-date-picker
+  //       type="date"
+  //       value-format="x"
+  //       placeholder="选择借款日期"
+  //       disabled-date={disabledDate}
+  //     />
+  //   ),
+  //   rules: {
+  //     required: true,
+  //     message: '选择借款日期'
+  //   }
+  // },
+  // {
+  //   field: 'purpose',
+  //   label: '借款事由',
+  //
+  //   span: 4,
+  //   component: <el-input />,
+  //   rules: {
+  //     required: true,
+  //     message: '请输入借款事由'
+  //   }
+  // }
+  ]
+  //公司地址信息
+  const companyAreaSchemas = [
+    {
+      field: 'companyAreaIdList',
+      label: '公司地址',
+      rules: {
+        required: true,
+        message: '请选择公司地址'
+      }
+    },
+    {
+      field: 'companyAddress',
+      label: '',
+      labelWidth: '20px',
+      component: (
+              <el-input
+                      placeholder="请输入详细地址"
+                      validate-event={false}
+              />
+      ),
+      rules: {
+        required: true,
+        message: '请输入详细地址'
+      }
+    }
+  ]
+  //工厂地址
+  const factoryAreaSchemas = [
+    {
+      field: 'factoryAreaIdList',
+      label: '工厂地址',
+      rules: {
+        required: true,
+        message: '请选择工厂地址'
+      }
+    },
+    {
+      field: 'factoryAddress',
+      label: '',
+      labelWidth: '20px',
+      component: (
+              <el-input
+                      placeholder="请输入详细地址"
+                      validate-event={false}
+              />
+      ),
+      rules: {
+        required: true,
+        message: '请输入详细地址'
+      }
+    }
+  ]
+  const remarkSchema = [
+    {
+      field: 'remark',
+      label: '备注',
+      span: 16,
+      component: (
+              <el-input
+                      type="textarea"
+                      placeholder="请输入备注"
+              />
+      ),
+      rules: {
+        required: false,
+        message: '请输入备注'
+      }
+    }
+  ]
+  //财务信息
+  const financeSchemas: EplusFormSchema[] = [
+    {
+      field: 'currency',
+      label: '币种',
+      component: (
+              <eplus-dict-select
+                      dictType={DICT_TYPE.CURRENCY_TYPE}
+                      style="width:100%"
+              />
+      ),
+      rules: {
+        required: true,
+        message: '请选择币种'
+      }
+    },
+    {
+      field: 'taxRate',
+      label: '税率%',
+      component: (
+              <el-input-number
+                      class="mx-4"
+                      min="0"
+                      max="99.99"
+                      precision={2}
+                      controls={false}
+                      style="width:100%;margin:0;textAlign:left"
+                      placeholder="请输入税率"
+              />
+      ),
+      rules: {
+        required: true,
+        message: '请输入税率'
+      }
+    },
+    {
+      field: 'taxType',
+      label: '发票类型',
+      component: (
+              <eplus-dict-select
+                      dictType={DICT_TYPE.INVOICE_TYPE}
+                      style="width:100%"
+              />
+      ),
+      rules: {
+        required: true,
+        message: '请选择发票类型'
+      }
+    },
+    {
+      field: 'paymentIdList',
+      label: '付款方式',
+      rules: {
+        required: false,
+        message: '请选择付款方式'
+      }
+    }
+  ]
+  //联系人信息
+  const pocListSchemas: EplusFormSchema[] = [
+    {
+      field: 'pocList',
+      label: '',
+      span: 24,
+      labelWidth: '0px',
+      rules: {
+        required: true
+      }
+    }
+  ]
+  //银行账户信息
+  const bankAccountSchemas: EplusFormSchema[] = [
+    {
+      field: 'bankaccountList',
+      label: '',
+      span: 24,
+      labelWidth: '0px',
+      rules: {
+        required: true
+      }
+    }
+  ]
+  //附件信息
+  const getFileList = (params) => {
+    formData.value.fileAnnexList = params.value
+  }
+  const fileAnnexListSchemas: EplusFormSchema[] = [
+    {
+      field: 'fileAnnexList',
+      label: '',
+      labelWidth: '0px',
+      component: (
+              <UploadList
+                      ref={(val) => {
+                        UploadRef.value = val
+                      }}
+                      fileList={formData}
+                      onSuccess={getFileList}
+              />
+      )
+    }
+  ]
+  const fileListFormatter = (params) => {
+    let fileTempList: Recordable[] = []
+    if (!!params.fileAnnexList && params.fileAnnexList.length > 0) {
+      params.fileAnnexList.map((item) => {
+        return fileTempList.push(item.id)
+      })
+      params.fileAnnexList = fileTempList
+    }
+    return params
+  }
+  //用户列表
+  const simpleUserList: any = ref([])
+  const submitForm = async (type?: string) => {
+    formLoading.value = true
+    const reqList = { submitFlag: type === 'submit' ? 1 : 0, ...cloneDeep(formData.value) }
+    //地址只传最子节点的code
+    if (reqList.companyAreaIdList?.length === 3 && reqList.factoryAreaIdList?.length === 3) {
+      reqList.companyAreaId = reqList.companyAreaIdList[2]
+      reqList.factoryAreaId = reqList.factoryAreaIdList[2]
+    }
+    reqList.fileAnnexList?.map((item) => {
+      return (item = item?.id)
+    })
+    //处理联系人和银行信息
+    if (pocListRef.value) {
+      let pocListResult = await pocListRef.value?.saveForm()
+      if (pocListResult) {
+        reqList.pocList = pocListResult
+      } else {
+        return false
+      }
+    }
+    if (bankaccountListRef.value) {
+      let bankaccountListResult = await bankaccountListRef.value?.saveForm()
+      if (bankaccountListResult) {
+        reqList.bankaccountList = bankaccountListResult
+      } else {
+        return false
+      }
+    }
+    formRef.value
+            ?.validate()
+            .then(async (res) => {
+              if (res) {
+                if (queryId) {
+                  await VenderApi.updateVender(fileListFormatter(reqList))
+                          .then((res) => {
+                            message.success('提交成功')
+                            close()
+                          })
+                          .catch((err) => {
+                            message.error('提交失败')
+                          })
+                } else {
+                  await VenderApi.createVender(fileListFormatter(reqList))
+                          .then((res) => {
+                            message.success('提交成功')
+                            close()
+                          })
+                          .catch((err) => {
+                            message.error('提交失败')
+                          })
+                }
+              } else {
+                message.error('请确认必填项')
+              }
+            })
+            .catch((err) => {
+              console.log(err, 'err')
+            })
+    formLoading.value = false
+  }
+  const treeListFormat = (params: any[]) => {
+    params.map((item, index, arr) => {
+      item.value = item.id
+      item.label = item.name
+      if (item?.children) {
+        treeListFormat(item?.children)
+      }
+    })
+    return params
+  }
+  onMounted(async () => {
+    venderList.value = await VenderApi.getPayableVender({ venderName: '' })
+    simpleUserList.value = await getSimpleUserList()
+    //验证当前用户是否存在于业务员列表中
+    const userIdCheck = simpleUserList.value.find((val) => {
+      if (val.id === userInfo.user.id) return true
+    })
+    //采购员部门展示
+    simpleUserList.value.map((item, index, arr) => {
+      if (item.deptName !== arr[index - 1]?.deptName) {
+        index !== 0 && (arr[index - 1].endDept = 1)
+        item.firstDept = 1
+      } else {
+      }
+    })
+    areaTreeList.value = treeListFormat(cloneDeep(areaTreeStore.areaTree))
+    // areaTreeList.value = handleTree(areaTreeStore.areaTree, 'id')
+    if (queryId) {
+      let result = await VenderApi.getVender({ id: props.id })
+      result.buyerIds = result.buyerList?.map((item) => {
+        return (item = item.id)
+      })
+      result.paymentIdList = result.paymentList ? result.paymentList[0].code : ''
+      formData.value = result
+      provide(formData, 'formData')
+      // await getCustDetail(queryId)
+    } else {
+      formData.value.buyerIds = [userInfo.user?.id]
+      formData.value.fileAnnexList = []
+    }
+    nextTick(() => {
+      editFileShow.value = true
+      if (formData.value.bankaccountList?.length < 1) {
+        // refs.bankaccountList?.addRow()
+      }
+      if (formData.value.pocList?.length < 1) {
+        // refs.pocList?.addRow()
+      }
+      if (!userIdCheck && !queryId) {
+        formData.value.buyerIds = []
+      }
+    })
+  })
+  onUnmounted(() => {})
+</script>
+<style lang="scss" scoped>
+  .el-form-item--default {
+    margin-bottom: 0;
+  }
+
+  .el-table__inner-wrapper {
+    width: 100%;
+  }
+
+  .buttonContainer {
+    width: 100%;
+    margin-top: 50px;
+  }
+  :deep(.el-input__inner) {
+    text-align: left !important;
+  }
+</style>

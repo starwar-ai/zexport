@@ -1,0 +1,73 @@
+package ${basePackage}.module.${table.moduleName}.convert;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.factory.Mappers;
+import cn.hutool.core.collection.CollUtil;
+import ${basePackage}.module.${table.moduleName}.controller.${sceneEnum.basePackage}.${table.businessName}.vo.*;
+import ${basePackage}.module.${table.moduleName}.dal.dataobject.${table.businessName}.${table.className}DO;
+import java.util.*;
+#foreach ($column in $columns)
+#if (${column.requireName})
+#if (${column.nameType} == "userName")
+import com.syj.eplus.framework.common.entity.UserDept;
+#elseif(${column.nameType} == "companyName")
+import cn.iocoder.yudao.module.system.api.company.dto.SimpleCompanyDTO;
+#elseif(${column.nameType} == "deptName")
+import cn.iocoder.yudao.module.system.api.dept.dto.DeptRespDTO;
+#end
+#end
+#end
+
+
+@Mapper
+public interface ${sceneEnum.prefixClass}${table.className}Convert {
+
+        ${sceneEnum.prefixClass}${table.className}Convert INSTANCE = Mappers.getMapper(${sceneEnum.prefixClass}${table.className}Convert.class);
+
+        ${sceneEnum.prefixClass}${table.className}RespVO convert(${table.className}DO ${classNameVar}DO);
+
+        default ${sceneEnum.prefixClass}${table.className}RespVO convert${sceneEnum.prefixClass}${table.className}RespVO(${table.className}DO ${classNameVar}DO#foreach ($column in $columns)#if (${column.requireName})#if (${column.nameType} == "userName"),Map< Long,UserDept> userDeptMap#elseif (${column.nameType} == "custName"),Map< String, String> custNameCache#elseif (${column.nameType} == "venderName"), Map< String, String> venderNameCache#elseif(${column.nameType} == "companyName"), Map< Long, SimpleCompanyDTO> simpleCompanyDTOMap#elseif(${column.nameType} == "deptName"),Map< Long, DeptRespDTO> deptMap#end#end#end){
+                ${sceneEnum.prefixClass}${table.className}RespVO ${classNameVar}RespVO = convert(${classNameVar}DO);
+        #foreach ($column in $columns)
+        #if (${column.requireName})
+                #set ($JavaField = $column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})##首字母大写
+                #set ($JavaNameField = $column.javaNameField.substring(0,1).toUpperCase() + ${column.javaNameField.substring(1)})##首字母大写
+                #if (${column.nameType} == "userName")
+                if(CollUtil.isNotEmpty(userDeptMap)){
+                UserDept userDept = userDeptMap.get(${classNameVar}DO.get${JavaField}());
+                if (userDept != null) {
+                ${classNameVar}RespVO.set${JavaNameField}(userDept.getNickname());
+                }
+                }
+                #elseif(${column.nameType} == "custName")
+                if(CollUtil.isNotEmpty(custNameCache)){
+                String custName = custNameCache.get(${classNameVar}DO.get${JavaField}());
+                ${classNameVar}RespVO.set${JavaNameField}(custName);
+                }
+                #elseif(${column.nameType} == "venderName")
+                if(CollUtil.isNotEmpty(venderNameCache)){
+                String venderName = venderNameCache.get(${classNameVar}DO.get${JavaField}());
+                ${classNameVar}RespVO.set${JavaNameField}(venderName);
+                }
+                #elseif(${column.nameType} == "companyName")
+                if(CollUtil.isNotEmpty(simpleCompanyDTOMap)){
+                SimpleCompanyDTO simpleCompanyDTO = simpleCompanyDTOMap.get(${classNameVar}DO.get${JavaField}());
+                if (simpleCompanyDTO != null) {
+                ${classNameVar}RespVO.set${JavaNameField}(simpleCompanyDTO.getName());
+                }
+                }
+                #elseif(${column.nameType} == "deptName")
+                if(CollUtil.isNotEmpty(deptMap)){
+                DeptRespDTO deptRespDTO = deptMap.get(${classNameVar}DO.get${JavaField}());
+                if (deptRespDTO != null) {
+                ${classNameVar}RespVO.set${JavaNameField}(deptRespDTO.getName());
+                }
+                }
+                #end
+        #end
+        #end
+                return ${classNameVar}RespVO;
+        };
+
+        ${table.className}DO convert${sceneEnum.prefixClass}${table.className}DO(${sceneEnum.prefixClass}${table.className}SaveReqVO saveReqVO);
+}

@@ -1,0 +1,415 @@
+---
+alwaysApply: true
+---
+
+# Eplus Admin UI - Cursor Rules
+
+## 概述
+
+这是为 Eplus Admin UI 项目定制的 Cursor Rules，基于 Vue3 + TypeScript + Element Plus 技术栈，提供完整的开发规范和最佳实践指导。
+
+## 规则文件说明
+
+### 📁 `.cursor/rules/` 目录结构
+
+```
+.cursor/rules/
+├── README.md                    # 本文件 - 使用说明
+├── vue3-typescript.md          # Vue3 + TypeScript 核心规范
+├── api-state-management.md     # API 接口和状态管理规范
+├── styling-routing.md          # 样式和路由规范
+├── performance-testing.md      # 性能优化和测试规范
+└── development-workflow.md     # 开发工作流和最佳实践
+```
+
+### 📋 各规则文件内容
+
+| 文件名 | 主要内容 | 适用场景 |
+| --- | --- | --- |
+| `vue3-typescript.md` | Vue3 组件规范、TypeScript 类型定义、文件命名规范 | 日常组件开发 |
+| `api-state-management.md` | API 接口规范、Pinia 状态管理、错误处理 | 接口开发和状态管理 |
+| `styling-routing.md` | SCSS 样式规范、Vue Router 配置、布局组件 | 样式开发和路由配置 |
+| `performance-testing.md` | 性能优化、单元测试、E2E 测试 | 性能优化和测试编写 |
+| `development-workflow.md` | 开发工具配置、代码提交规范、安全规范 | 开发流程和工具配置 |
+
+## 技术栈
+
+- **Vue 3.3.8+** - Composition API + `<script setup>`
+- **TypeScript 5.0+** - 严格类型检查
+- **Element Plus 2.4.2** - UI 组件库
+- **Vite 4.x** - 构建工具
+- **Pinia 2.1.7** - 状态管理
+- **Vue Router 4.2.5** - 路由管理
+- **Vue I18n 9.6.5** - 国际化
+
+## 使用方法
+
+### 1. 在 Cursor 中使用
+
+这些规则文件会自动被 Cursor 识别和使用，当你在项目中编写代码时，Cursor 会根据这些规则提供更准确的代码建议。
+
+### 2. 开发建议
+
+- **组件开发**: 参考 `vue3-typescript.md` 中的组件结构模板
+- **API 开发**: 遵循 `api-state-management.md` 中的接口规范
+- **样式开发**: 使用 `styling-routing.md` 中的 SCSS 规范
+- **性能优化**: 参考 `performance-testing.md` 中的优化策略
+- **开发流程**: 按照 `development-workflow.md` 中的规范执行
+
+### 3. 代码示例
+
+#### Vue 组件模板
+
+```vue
+<template>
+  <div class="component-name">
+    <!-- 模板内容 -->
+  </div>
+</template>
+
+<script setup lang="ts">
+// 导入
+import { ref, computed } from 'vue'
+import type { ComponentProps } from './types'
+
+// Props 定义
+interface Props {
+  title: string
+  loading?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  loading: false
+})
+
+// Emits 定义
+const emit = defineEmits<{
+  change: [value: string]
+}>()
+
+// 响应式数据
+const count = ref(0)
+
+// 计算属性
+const displayTitle = computed(() => {
+  return props.loading ? '加载中...' : props.title
+})
+
+// 方法
+const handleClick = () => {
+  count.value++
+  emit('change', count.value.toString())
+}
+</script>
+
+<style lang="scss" scoped>
+.component-name {
+  // 样式
+}
+</style>
+```
+
+#### API 接口规范
+
+```typescript
+// api/user.ts
+import request from '@/utils/request'
+import type { UserInfo, CreateUserRequest } from '@/types/user'
+
+export const userApi = {
+  getUserList: (params: GetUserListParams): Promise<ApiResponse<UserInfo[]>> => {
+    return request.get('/admin-api/system/user/page', { params })
+  },
+
+  createUser: (data: CreateUserRequest): Promise<ApiResponse<UserInfo>> => {
+    return request.post('/admin-api/system/user/create', data)
+  }
+}
+```
+
+#### Pinia Store 规范
+
+```typescript
+// store/user.ts
+import { defineStore } from 'pinia'
+import { userApi } from '@/api/user'
+
+export const useUserStore = defineStore('user', () => {
+  const userInfo = ref<UserInfo | null>(null)
+  const token = ref<string>('')
+
+  const isLoggedIn = computed(() => !!token.value)
+
+  const login = async (username: string, password: string) => {
+    const response = await userApi.login({ username, password })
+    token.value = response.data.token
+    userInfo.value = response.data.userInfo
+  }
+
+  return {
+    userInfo,
+    token,
+    isLoggedIn,
+    login
+  }
+})
+```
+
+## 最佳实践
+
+### 1. 代码质量
+
+- 使用 TypeScript 严格模式
+- 遵循 ESLint 和 Prettier 规范
+- 编写单元测试和集成测试
+
+### 2. 性能优化
+
+- 使用组件懒加载
+- 实现虚拟滚动处理大数据
+- 合理使用防抖和节流
+
+### 3. 安全防护
+
+- 防止 XSS 攻击
+- 实现权限控制
+- 验证用户输入
+
+### 4. 用户体验
+
+- 响应式设计
+- 国际化支持
+- 错误处理机制
+
+## 注意事项
+
+1. **组件命名**: 使用 PascalCase，自定义组件以 `Eplus` 开头
+2. **文件命名**: 组件文件使用 PascalCase，工具文件使用 camelCase
+3. **类型安全**: 避免使用 `any`，充分利用 TypeScript 类型系统
+4. **性能考虑**: 合理使用懒加载和缓存机制
+5. **代码复用**: 提取公共组件和工具函数
+
+## 更新日志
+
+- **2024-01-01**: 初始版本，包含完整的开发规范
+- **2024-01-02**: 添加性能优化和测试规范
+- **2024-01-03**: 完善安全规范和国际化支持
+
+## 贡献指南
+
+如需修改或扩展这些规则，请：
+
+1. 确保修改符合项目技术栈
+2. 保持规则的一致性和可读性
+3. 更新相关文档和示例
+4. 测试规则的有效性
+
+---
+
+**这些规则将帮助您和团队保持代码质量，提高开发效率，确保项目的一致性和可维护性。**
+
+# Eplus Admin UI - Cursor Rules
+
+## 概述
+
+这是为 Eplus Admin UI 项目定制的 Cursor Rules，基于 Vue3 + TypeScript + Element Plus 技术栈，提供完整的开发规范和最佳实践指导。
+
+## 规则文件说明
+
+### 📁 `.cursor/rules/` 目录结构
+
+```
+.cursor/rules/
+├── README.md                    # 本文件 - 使用说明
+├── vue3-typescript.md          # Vue3 + TypeScript 核心规范
+├── api-state-management.md     # API 接口和状态管理规范
+├── styling-routing.md          # 样式和路由规范
+├── performance-testing.md      # 性能优化和测试规范
+└── development-workflow.md     # 开发工作流和最佳实践
+```
+
+### 📋 各规则文件内容
+
+| 文件名 | 主要内容 | 适用场景 |
+| --- | --- | --- |
+| `vue3-typescript.md` | Vue3 组件规范、TypeScript 类型定义、文件命名规范 | 日常组件开发 |
+| `api-state-management.md` | API 接口规范、Pinia 状态管理、错误处理 | 接口开发和状态管理 |
+| `styling-routing.md` | SCSS 样式规范、Vue Router 配置、布局组件 | 样式开发和路由配置 |
+| `performance-testing.md` | 性能优化、单元测试、E2E 测试 | 性能优化和测试编写 |
+| `development-workflow.md` | 开发工具配置、代码提交规范、安全规范 | 开发流程和工具配置 |
+
+## 技术栈
+
+- **Vue 3.3.8+** - Composition API + `<script setup>`
+- **TypeScript 5.0+** - 严格类型检查
+- **Element Plus 2.4.2** - UI 组件库
+- **Vite 4.x** - 构建工具
+- **Pinia 2.1.7** - 状态管理
+- **Vue Router 4.2.5** - 路由管理
+- **Vue I18n 9.6.5** - 国际化
+
+## 使用方法
+
+### 1. 在 Cursor 中使用
+
+这些规则文件会自动被 Cursor 识别和使用，当你在项目中编写代码时，Cursor 会根据这些规则提供更准确的代码建议。
+
+### 2. 开发建议
+
+- **组件开发**: 参考 `vue3-typescript.md` 中的组件结构模板
+- **API 开发**: 遵循 `api-state-management.md` 中的接口规范
+- **样式开发**: 使用 `styling-routing.md` 中的 SCSS 规范
+- **性能优化**: 参考 `performance-testing.md` 中的优化策略
+- **开发流程**: 按照 `development-workflow.md` 中的规范执行
+
+### 3. 代码示例
+
+#### Vue 组件模板
+
+```vue
+<template>
+  <div class="component-name">
+    <!-- 模板内容 -->
+  </div>
+</template>
+
+<script setup lang="ts">
+// 导入
+import { ref, computed } from 'vue'
+import type { ComponentProps } from './types'
+
+// Props 定义
+interface Props {
+  title: string
+  loading?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  loading: false
+})
+
+// Emits 定义
+const emit = defineEmits<{
+  change: [value: string]
+}>()
+
+// 响应式数据
+const count = ref(0)
+
+// 计算属性
+const displayTitle = computed(() => {
+  return props.loading ? '加载中...' : props.title
+})
+
+// 方法
+const handleClick = () => {
+  count.value++
+  emit('change', count.value.toString())
+}
+</script>
+
+<style lang="scss" scoped>
+.component-name {
+  // 样式
+}
+</style>
+```
+
+#### API 接口规范
+
+```typescript
+// api/user.ts
+import request from '@/utils/request'
+import type { UserInfo, CreateUserRequest } from '@/types/user'
+
+export const userApi = {
+  getUserList: (params: GetUserListParams): Promise<ApiResponse<UserInfo[]>> => {
+    return request.get('/admin-api/system/user/page', { params })
+  },
+
+  createUser: (data: CreateUserRequest): Promise<ApiResponse<UserInfo>> => {
+    return request.post('/admin-api/system/user/create', data)
+  }
+}
+```
+
+#### Pinia Store 规范
+
+```typescript
+// store/user.ts
+import { defineStore } from 'pinia'
+import { userApi } from '@/api/user'
+
+export const useUserStore = defineStore('user', () => {
+  const userInfo = ref<UserInfo | null>(null)
+  const token = ref<string>('')
+
+  const isLoggedIn = computed(() => !!token.value)
+
+  const login = async (username: string, password: string) => {
+    const response = await userApi.login({ username, password })
+    token.value = response.data.token
+    userInfo.value = response.data.userInfo
+  }
+
+  return {
+    userInfo,
+    token,
+    isLoggedIn,
+    login
+  }
+})
+```
+
+## 最佳实践
+
+### 1. 代码质量
+
+- 使用 TypeScript 严格模式
+- 遵循 ESLint 和 Prettier 规范
+- 编写单元测试和集成测试
+
+### 2. 性能优化
+
+- 使用组件懒加载
+- 实现虚拟滚动处理大数据
+- 合理使用防抖和节流
+
+### 3. 安全防护
+
+- 防止 XSS 攻击
+- 实现权限控制
+- 验证用户输入
+
+### 4. 用户体验
+
+- 响应式设计
+- 国际化支持
+- 错误处理机制
+
+## 注意事项
+
+1. **组件命名**: 使用 PascalCase，自定义组件以 `Eplus` 开头
+2. **文件命名**: 组件文件使用 PascalCase，工具文件使用 camelCase
+3. **类型安全**: 避免使用 `any`，充分利用 TypeScript 类型系统
+4. **性能考虑**: 合理使用懒加载和缓存机制
+5. **代码复用**: 提取公共组件和工具函数
+
+## 更新日志
+
+- **2024-01-01**: 初始版本，包含完整的开发规范
+- **2024-01-02**: 添加性能优化和测试规范
+- **2024-01-03**: 完善安全规范和国际化支持
+
+## 贡献指南
+
+如需修改或扩展这些规则，请：
+
+1. 确保修改符合项目技术栈
+2. 保持规则的一致性和可读性
+3. 更新相关文档和示例
+4. 测试规则的有效性
+
+---
+
+**这些规则将帮助您和团队保持代码质量，提高开发效率，确保项目的一致性和可维护性。**

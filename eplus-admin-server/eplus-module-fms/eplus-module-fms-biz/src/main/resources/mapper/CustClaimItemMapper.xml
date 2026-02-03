@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syj.eplus.module.fms.dal.mysql.custclaim.CustClaimItemMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <resultMap id="BaseResultMap" type="com.syj.eplus.module.fms.dal.dataobject.custclaim.CustClaimItem">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="custId" jdbcType="BIGINT" property="custId"/>
+        <result column="custCode" jdbcType="VARCHAR" property="custCode"/>
+        <result column="custName" jdbcType="VARCHAR" property="custName"/>
+        <result column="currency" jdbcType="VARCHAR" property="currency"/>
+        <result column="settlementName" jdbcType="VARCHAR" property="settlementName"/>
+        <result column="sourceType" jdbcType="INTEGER" property="sourceType"/>
+        <result column="receivableAmount" jdbcType="DECIMAL" property="receivableAmount"/>
+        <result column="receivedAmount" jdbcType="DECIMAL" property="receivedAmount"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+    </resultMap>
+    <resultMap id="ResultMapWithJson" type="com.syj.eplus.module.fms.dal.dataobject.custclaim.CustClaimItem"
+               extends="BaseResultMap">
+        <result column="differenceReason" property="differenceReason" javaType="com.syj.eplus.framework.common.entity.DifferenceReason"
+                typeHandler="com.syj.eplus.framework.common.config.handler.DifferenceReasonListHandler"/>
+    </resultMap>
+</mapper>

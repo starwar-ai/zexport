@@ -1,0 +1,48 @@
+package com.syj.eplus.module.infra.dal.dataobject.sn;
+
+import cn.iocoder.yudao.framework.mybatis.core.dataobject.BaseDO;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.*;
+
+/**
+ * 序列号记录 DO
+ *
+ * @author ePlus
+ */
+@TableName("system_sn")
+@KeySequence("system_sn_seq") // 用于 Oracle、PostgreSQL、Kingbase、DB2、H2 数据库的主键自增。如果是 MySQL 等数据库，可不写。
+@Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SnDO extends BaseDO {
+
+    /**
+     * 编号
+     */
+    @TableId(type = IdType.AUTO)
+    private Long id;
+    /**
+     * 类型
+     */
+    private String type;
+    /**
+     * 编号前缀
+     */
+    private String codePrefix;
+    /**
+     * 序列号
+     */
+    private Integer sn;
+
+    /**
+     * 长度
+     */
+    private Integer length;
+
+}

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syj.eplus.module.fms.dal.mysql.bankregistration.BankRegistrationMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+    <resultMap id="BaseResultMap" type="com.syj.eplus.module.fms.controller.admin.bankregistration.vo.SimpleRegistrationResp">
+        <result column="id" jdbcType="BIGINT" property="id"/>
+        <result column="code" jdbcType="VARCHAR" property="code"/>
+        <result column="companyTitle" jdbcType="VARCHAR" property="companyTitle"/>
+        <result column="companyId" jdbcType="BIGINT" property="companyId"/>
+        <result column="companyName" jdbcType="VARCHAR" property="companyName"/>
+        <result column="bank" jdbcType="VARCHAR" property="bank"/>
+        <result column="bankAccount" jdbcType="VARCHAR" property="bankAccount"/>
+        <result column="currency" jdbcType="VARCHAR" property="currency"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="claimedAmount" jdbcType="DECIMAL" property="claimedAmount"/>
+    </resultMap>
+    <resultMap id="ResultMapWithJson" type="com.syj.eplus.module.fms.controller.admin.bankregistration.vo.SimpleRegistrationResp"
+               extends="BaseResultMap">
+        <result column="registeredBy" property="registeredBy" javaType="com.syj.eplus.framework.common.entity.UserDept"
+                typeHandler="com.syj.eplus.framework.common.config.handler.JsonUserDeptTypeHandler"/>
+        <result column="managerList" property="managerList" javaType="com.syj.eplus.framework.common.entity.DifferenceReason"
+                typeHandler="com.syj.eplus.framework.common.config.handler.JsonUserDeptListTypeHandler"/>
+        <result column="custList" property="custList" javaType="com.syj.eplus.framework.common.entity.DifferenceReason"
+                typeHandler="com.syj.eplus.framework.common.config.handler.JsonSimpleDataListTypeHandler"/>
+    </resultMap>
+</mapper>

@@ -1,0 +1,8 @@
+---
+alwaysApply: true
+---
+1、不要随意删除注释
+2、@eplus-admin-server 这是后台 @eplus-admin-ui-elementplus 这是前台
+3、后台的技术栈为：java + spring-boot + yudao-server
+4、前端的技术栈为：element-plus + vue3 + tsx
+5、默认添加注释的作者是：波波

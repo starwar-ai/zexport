@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.iocoder.boot</groupId>
+        <artifactId>yudao-framework</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>yudao-framework-integration</artifactId>
+    <packaging>pom</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>
+        集成组件聚合模块
+        包含: Redis、消息队列、定时任务、文件存储等集成功能
+    </description>
+
+    <dependencies>
+        <!-- Redis 缓存 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-redis</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- 消息队列 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-mq</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- 定时任务 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-job</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- 文件存储 -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-file</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- WebSocket -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-websocket</artifactId>
+            <version>${revision}</version>
+        </dependency>
+    </dependencies>
+
+</project>

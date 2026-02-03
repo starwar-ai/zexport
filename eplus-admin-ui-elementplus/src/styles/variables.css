@@ -1,0 +1,82 @@
+:root {
+  --login-bg-color: #293146;
+
+  --left-menu-max-width: 200px;
+
+  --left-menu-min-width: 64px;
+
+  --left-menu-bg-color: #fff;
+
+  --left-menu-bg-light-color: none;
+
+  --left-menu-bg-active-color: #fff;
+
+  --left-menu-text-color: #333;
+
+  --left-menu-text-active-color: #000;
+
+  --left-menu-collapse-bg-active-color: var(--el-color-primary);
+  /* left menu end */
+
+  /* logo start */
+  --logo-height: 120px;
+
+  --logo-title-text-color: #fff;
+  /* logo end */
+
+  /* header start */
+  --top-header-bg-height: 38px;
+
+  --top-header-bg-color: #252c38;
+
+  --top-header-text-color: #fff;
+
+  --top-header-hover-color: #f6f6f6;
+
+  --top-tool-height: var(--top-header-bg-height);
+
+  --top-tool-p-x: 0;
+
+  --tags-view-height: 35px;
+  /* header start */
+
+  /* tab menu start */
+  --tab-menu-max-width: 180px;
+
+  --tab-menu-min-width: 55px;
+
+  --tab-menu-collapse-height: 36px;
+
+  --tab-menu-bg-color: #14181f;
+
+  --tab-menu-bg-light-color: #0f2438;
+
+  --tab-menu-bg-active-color: var(--el-color-primary);
+
+  --tab-menu-text-color: #bfcbd9;
+
+  --tab-menu-text-active-color: #fff;
+
+  /* tab menu end */
+
+  --app-content-padding: 20px;
+
+  --app-content-bg-color: #f5f7f9;
+
+  --app-footer-height: 50px;
+
+  --transition-time-02: 0.2s;
+
+  --transition-time-025: 0.25s;
+
+  /* 新增布局左侧菜单字体大小 */
+  --mini-menu-font-size: 16px;
+
+  /* 登录页主题颜色 */
+  --login-main-color: #4a4a4a;
+
+  --el-font-size-small: 14px;
+  /* 表格字体颜色设置 */
+  --el-text-color-secondary: #333333;
+  --el-text-color-regular: #1e1e1e;
+}

@@ -1,0 +1,483 @@
+<template>
+  <eplus-detail
+    v-if="!loading"
+    ref="eplusDetailRef"
+    :page="pageFlag"
+    backUrl="/base/product-manage/main"
+    :approveApi="skuApi.approveSku"
+    :rejectApi="skuApi.rejectSku"
+    :auditable="pageInfo"
+    :showProcessInstanceTaskList="showProcessInstanceTaskListFlag"
+    :outDialog="outDialogFlag"
+    :cancel="{
+      permi: 'pms:sku:submit',
+      handler: () => {}
+    }"
+    :edit="{
+      permi: 'pms:sku:update',
+      handler: () => goEdit()
+    }"
+    :approve="{
+      permi: 'pms:sku:audit',
+      handler: () => {}
+    }"
+    :revertAudit="{
+      permi: 'pms:sku:anti-audit',
+      handler: handleRevertAudit
+    }"
+    @update="handleUpdate"
+  >
+    <eplus-description
+      title="基本信息"
+      :data="pageInfo"
+      :items="basicInfo"
+    >
+      <template #spec>
+        {{ pageInfo?.specLength }}*{{ pageInfo?.specWidth }}*{{ pageInfo?.specHeight }}
+        {{ LengthUnit }}
+      </template>
+      <template #singleNetweight>
+        {{ pageInfo?.singleNetweight.weight }} {{ pageInfo?.singleNetweight.unit }}
+      </template>
+      <template #onshelfFlag>
+        {{ getDictLabel(DICT_TYPE.ONSHELF_FLAG, pageInfo.onshelfFlag) }}
+        <el-button
+          size="small"
+          @click="updateVal('onshelfFlag')"
+          v-if="!props.readonly && pageInfo.auditStatus == 2"
+          v-hasPermi="['pms:sku:onshelfFlag']"
+          >修改状态
+        </el-button>
+      </template>
+      <template #companyPrice>
+        <span v-if="pageInfo.companyPrice.amount">
+          {{ pageInfo.companyPrice.amount }} {{ pageInfo.companyPrice.currency }}
+        </span>
+        <span v-else> - </span>
+        <el-button
+          class="ml10px"
+          size="small"
+          @click="setPrice"
+          v-if="!props.readonly"
+          v-hasPermi="['pms:sku:pricing']"
+          >设置定价差价
+        </el-button>
+      </template>
+      <template #advantageFlag>
+        {{ getDictLabel(DICT_TYPE.IS_INT, pageInfo.advantageFlag) }}
+        <el-button
+          size="small"
+          @click="updateVal('advantageFlag')"
+          v-if="!props.readonly"
+          v-hasPermi="['pms:sku:advantage']"
+          >{{ pageInfo.advantageFlag === 1 ? '取消优势产品' : '设为优势产品' }}
+        </el-button>
+      </template>
+    </eplus-description>
+
+    <eplus-description
+      title=""
+      :data="pageInfo"
+      :items="basic2Info"
+    >
+      <template #description>
+        <SkuDescriptionCom :text="pageInfo.description" />
+      </template>
+
+      <template #descriptionEng>
+        <SkuDescriptionCom :text="pageInfo.descriptionEng" />
+      </template>
+      <template #annex>
+        <UploadList
+          :fileList="pageInfo.annex"
+          disabled
+        />
+      </template>
+      <template #picture>
+        <UploadZoomPic
+          v-model="pageInfo.picture"
+          disabled
+        />
+      </template>
+    </eplus-description>
+
+    <MainTableDetail :info="pageInfo" />
+    <QueteDetail :info="pageInfo" />
+    <HsdataDetail :info="pageInfo" />
+    <OtherDetail :info="pageInfo" />
+
+    <template #otherAction>
+      <component
+        v-for="(item, index) in btnList"
+        :key="index"
+        :is="item"
+      />
+    </template>
+  </eplus-detail>
+  <SetPriceCom
+    ref="SetPriceComRef"
+    @sure="handleUpdate"
+  />
+
+  <OtherActionCom
+    ref="otherActionComRef"
+    @success="handleUpdate"
+  />
+</template>
+<script setup lang="tsx">
+import { ElMessageBox } from 'element-plus'
+import * as skuApi from '@/api/pms/main/index'
+import { EplusDetail } from '@/components/EplusTemplate'
+import { EplusDescriptionItemSchema } from '@/components/EplusDescriptions'
+import { EplusDialog } from '@/components/EplusDialog'
+import { DICT_TYPE, getDictLabel } from '@/utils/dict'
+import SetPriceCom from './components/SetPriceCom.vue'
+import OtherDetail from './components/OtherDetail.vue'
+import MainTableDetail from './components/MainTableDetail.vue'
+import QueteDetail from './components/QueteDetail.vue'
+import HsdataDetail from './components/HsdataDetail.vue'
+import { LengthUnit } from '@/utils/config'
+import { checkPermi } from '@/utils/permission'
+import SkuDescriptionCom from '../components/skuDescriptionCom.vue'
+import OtherActionCom from './OtherActionCom.vue'
+import { getSkuInfoByCode } from '@/api/common'
+
+const message = useMessage()
+const pageInfo = ref({})
+const pageId = ref()
+const pageFlag = ref(false)
+const btnList = ref([])
+const eplusDetailRef = ref()
+const showProcessInstanceTaskListFlag = ref(true)
+const outDialogFlag = ref(false)
+const props = defineProps<{
+  id?: number
+  eplusDialogRef?: ComponentRef<typeof EplusDialog>
+  readonly?: boolean
+}>()
+
+defineOptions({ name: 'SkuMainDetail' })
+//定义edit事件
+// const { close } =
+//   props.id && !pageFlag.value
+//     ? (inject('dialogEmits') as {
+//         close: () => void
+//       })
+//     : { close: () => {} }
+
+const { updateDialogActions, clearDialogActions } =
+  props.id && !useRoute().params.id
+    ? (inject('dialogActions') as {
+        updateDialogActions: (...args: any[]) => void
+        clearDialogActions: () => void
+      })
+    : useRoute().params.id
+      ? {
+          updateDialogActions: (...args: any[]) => {
+            btnList.value.push(...args)
+          },
+          clearDialogActions: () => {
+            btnList.value.splice(0, btnList.value.length)
+          }
+        }
+      : { updateDialogActions: () => {}, clearDialogActions: () => {} }
+
+const loading = ref(true)
+const { query } = useRoute()
+
+const getPageInfo = async () => {
+  loading.value = true
+  try {
+    await refreshInfo()
+  } finally {
+    loading.value = false
+  }
+}
+
+const otherActionComRef = ref()
+const goEdit = () => {
+  otherActionComRef.value.handleUpdate(pageInfo.value.id)
+}
+
+const handleDel = async () => {
+  await message.confirm('确认删除吗？')
+  await skuApi.deleteSku(pageInfo.value?.id)
+  message.success('删除成功')
+  eplusDetailRef.value.close()
+}
+
+const goChange = () => {
+  otherActionComRef.value.handleChange(pageInfo.value.id)
+}
+
+const goCopy = () => {
+  otherActionComRef.value.handleCopy(pageInfo.value.id)
+}
+
+const setBtn = () => {
+  clearDialogActions()
+  if (
+    pageInfo.value.changeStatus !== 2 &&
+    pageInfo.value.auditStatus === 2 &&
+    checkPermi(['pms:sku:change'])
+  ) {
+    updateDialogActions(
+      <el-button
+        onClick={() => {
+          goChange('基础产品变更')
+        }}
+        key="changeSku"
+      >
+        变更
+      </el-button>
+    )
+  }
+  if (
+    pageInfo.value.changeStatus !== 2 &&
+    pageInfo.value.auditStatus === 0 &&
+    checkPermi(['pms:sku:delete'])
+  ) {
+    updateDialogActions(
+      <el-button
+        onClick={() => {
+          handleDel()
+        }}
+        key="delete"
+      >
+        删除
+      </el-button>
+    )
+  }
+  updateDialogActions(
+    <el-button
+      onClick={() => {
+        goCopy()
+      }}
+      key="copySku"
+    >
+      复制
+    </el-button>
+  )
+}
+
+const setPageInfo = () => {
+  pageInfo.value.hsdataCode = pageInfo.value.hsdata?.code
+  pageInfo.value.hsdataUnit = pageInfo.value.hsdata?.unit
+  pageInfo.value.hsdataTaxRefundRate = pageInfo.value.hsdata?.taxRefundRate
+
+  pageInfo.value.description = pageInfo.value.description.replace(/\n/g, '<br>')
+  pageInfo.value.descriptionEng = pageInfo.value.descriptionEng.replace(/\n/g, '<br>')
+}
+const refreshInfo = async () => {
+  pageInfo.value =
+    props.id || pageFlag.value
+      ? await skuApi.getSkuInfo({ id: pageId.value })
+      : await skuApi.getSkuAuditInfo({ id: pageId.value })
+  setPageInfo()
+  setBtn()
+}
+
+const basicInfo: EplusDescriptionItemSchema[] = [
+  {
+    field: 'code',
+    label: '产品编码'
+  },
+  {
+    field: 'name',
+    label: '中文品名'
+  },
+  {
+    field: 'declarationName',
+    label: '报关中文品名'
+  },
+  {
+    field: 'nameEng',
+    label: '英文品名'
+  },
+  {
+    field: 'customsDeclarationNameEng',
+    label: '报关英文品名'
+  },
+  {
+    field: 'categoryName',
+    label: '产品分类'
+  },
+  {
+    field: 'sourceFlag',
+    label: '产品来源',
+    dictType: DICT_TYPE.SOURCE_FLAG
+  },
+  {
+    field: 'skuType',
+    label: '产品类型',
+    dictType: DICT_TYPE.SKU_TYPE
+  },
+  {
+    field: 'commodityInspectionFlag',
+    label: '是否商检',
+    dictType: DICT_TYPE.IS_INT
+  },
+  // {
+  //   field: 'ownBrandFlag',
+  //   label: '是否自主品牌',
+  //   dictType: DICT_TYPE.IS_INT
+  // },
+  // {
+  //   field: 'brandName',
+  //   label: '品牌'
+  // },
+  {
+    field: 'material',
+    label: '产品材质'
+  },
+  {
+    field: 'measureUnit',
+    label: '计量单位',
+    dictType: DICT_TYPE.MEASURE_UNIT
+  },
+  {
+    slotName: 'spec',
+    field: 'spec',
+    label: '单品规格'
+  },
+  {
+    slotName: 'singleNetweight',
+    field: 'singleNetweight',
+    label: '单品净重'
+  },
+  // {
+  //   field: 'purchaseUserName',
+  //   label: '采购员'
+  // },
+
+  {
+    slotName: 'onshelfFlag',
+    field: 'onshelfFlag',
+    label: '状态'
+  },
+  {
+    slotName: 'companyPrice',
+    field: 'companyPrice',
+    label: '定价差价'
+  },
+  {
+    slotName: 'advantageFlag',
+    field: 'advantageFlag',
+    label: '是否优势产品'
+  },
+  {
+    field: 'barcode',
+    label: '条形码'
+  },
+  {
+    field: 'creatorName',
+    label: '录入人'
+  },
+  {
+    field: 'createTime',
+    label: '创建日期',
+    type: 'date'
+  },
+  {
+    field: 'updateTime',
+    label: '更新日期',
+    type: 'date'
+  }
+]
+const basic2Info: EplusDescriptionItemSchema[] = [
+  {
+    slotName: 'description',
+    field: 'description',
+    label: '中文描述',
+    span: 12
+  },
+  {
+    slotName: 'descriptionEng',
+    field: 'descriptionEng',
+    label: '英文描述',
+    span: 12
+  },
+  {
+    slotName: 'annex',
+    field: 'annex',
+    label: '附件',
+    span: 24
+  },
+  {
+    field: 'picture',
+    label: '图片',
+    type: 'img',
+    span: 24
+  }
+]
+
+const handleUpdate = async () => {
+  pageInfo.value = await getSkuInfoByCode(pageInfo.value.code)
+  setPageInfo()
+  setBtn()
+}
+const handleRevertAudit = async () => {
+  await skuApi.revertAudit(pageInfo.value?.id)
+}
+const updateVal = (val) => {
+  let des = '',
+    params = {}
+  if (val === 'onshelfFlag') {
+    let status = pageInfo.value.onshelfFlag == 1 ? 0 : 1
+    des = `确认将产品状态修改为${getDictLabel(DICT_TYPE.ONSHELF_FLAG, status)}吗？`
+    params = {
+      id: pageInfo.value.id,
+      status: status
+    }
+  } else {
+    if (pageInfo.value.advantageFlag == 1) {
+      des = '确认该产品取消优势产品吗？'
+    } else {
+      des = '确认该产品设为优势产品吗？'
+    }
+    params = {
+      id: pageInfo.value.id,
+      advantageFlag: pageInfo.value.advantageFlag == 1 ? 0 : 1
+    }
+  }
+  let req = val === 'onshelfFlag' ? skuApi.setOnshelfFlag : skuApi.setAdvantage
+  ElMessageBox.confirm(des, '提示', {
+    cancelButtonText: '取消',
+    confirmButtonText: '确认',
+    type: 'warning'
+  })
+    .then(async () => {
+      await req(params)
+      message.success('修改成功')
+      refreshInfo()
+    })
+    .catch(() => {})
+}
+
+const SetPriceComRef = ref()
+
+const setPrice = () => {
+  SetPriceComRef.value.open(pageInfo.value)
+}
+
+onMounted(async () => {
+  if (useRoute().params.id) {
+    pageId.value = useRoute().params.id
+    pageFlag.value = true
+  } else {
+    pageFlag.value = false
+    if (query.id) {
+      showProcessInstanceTaskListFlag.value = false
+      outDialogFlag.value = true
+      pageId.value = query.id
+    }
+    if (props.id) {
+      showProcessInstanceTaskListFlag.value = true
+      outDialogFlag.value = false
+      pageId.value = props.id
+    }
+  }
+
+  await getPageInfo()
+})
+</script>

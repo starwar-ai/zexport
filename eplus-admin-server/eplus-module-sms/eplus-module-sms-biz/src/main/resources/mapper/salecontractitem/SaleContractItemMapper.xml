@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.syj.eplus.module.sms.dal.mysql.salecontractitem.SaleContractItemMapper">
+
+    <!-- SaleContractItem 完整映射 -->
+    <resultMap id="SaleContractItemResultMap" type="com.syj.eplus.module.sms.dal.dataobject.salecontractitem.SaleContractItem">
+        <!-- 主键 -->
+        <result column="id" property="contractId" />
+        <!-- 基础字段 -->
+        <result column="sort_num" property="sortNum" />
+        <result column="contract_id" property="contractId" />
+        <result column="contract_code" property="contractCode" />
+        <result column="sku_code" property="skuCode" />
+        <result column="basic_sku_code" property="basicSkuCode" />
+        <result column="name" property="name" />
+        <result column="name_eng" property="nameEng" />
+        <result column="thumbnail" property="thumbnail" />
+        <result column="csku_code" property="cskuCode" />
+        <result column="quantity" property="quantity" />
+        <result column="unit" property="unit" />
+        <result column="description" property="description" />
+        <result column="description_eng" property="descriptionEng" />
+        
+        <!-- 使用JsonAmountTypeHandler的价格字段 -->
+        <result column="unit_price" property="unitPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="total_sale_amount" property="totalSaleAmount" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="purchase_unit_price" property="purchaseUnitPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="real_purchase_with_tax_price" property="realPurchaseWithTaxPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="purchase_packaging_price" property="purchasePackagingPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="purchase_shipping_price" property="purchaseShippingPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="purchase_with_tax_price" property="purchaseWithTaxPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="purchase_total_price" property="purchaseTotalPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="commission_amount" property="commissionAmount" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="order_gross_profit" property="orderGrossProfit" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="tax_refund_price" property="taxRefundPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="inspection_fee" property="inspectionFee" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="fund_occupancy_fee" property="fundOccupancyFee" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="trailer_fee" property="trailerFee" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="insurance_fee" property="insuranceFee" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="platform_fee" property="platformFee" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="forecast_total_cost" property="forecastTotalCost" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="inner_calc_price" property="innerCalcPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="sinosure_fee" property="sinosureFee" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="with_tax_price_remove_free" property="withTaxPriceRemoveFree" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="total_sale_amount_usd" property="totalSaleAmountUsd" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+
+        <!-- 其他复杂类型字段 -->
+        <result column="main_picture" property="mainPicture" typeHandler="com.syj.eplus.framework.common.config.handler.JsonFileTypeHandler" />
+        <result column="package_type" property="packageType" typeHandler="com.syj.eplus.framework.common.config.handler.LongListTypeHandler" />
+        <result column="purchase_user" property="purchaseUser" typeHandler="com.syj.eplus.framework.common.config.handler.JsonUserDeptTypeHandler" />
+        <result column="manager" property="manager" typeHandler="com.syj.eplus.framework.common.config.handler.JsonUserDeptTypeHandler" />
+        <result column="stock_lock_save_req_v_o_list" property="stockLockSaveReqVOList" typeHandler="com.syj.eplus.framework.common.config.handler.JsonsTockLockSaveReqTypeHandler" />
+        <result column="split_purchase_list" property="splitPurchaseList" typeHandler="com.syj.eplus.framework.common.config.handler.JsonSplitPurchaseListTypeHandler" />
+        <result column="specification_list" property="specificationList" typeHandler="com.syj.eplus.framework.common.config.handler.JsonSpecificationEntityListHandler" />
+        <result column="lock_msg" property="lockMsg" typeHandler="com.syj.eplus.framework.common.config.handler.JsonLockListTypeHandler" />
+
+        <!-- 其他普通字段 -->
+        <result column="purchase_currency" property="purchaseCurrency" />
+        <result column="vender_name" property="venderName" />
+        <result column="vender_id" property="venderId" />
+        <result column="vender_code" property="venderCode" />
+        <result column="commission_type" property="commissionType" />
+        <result column="commission_rate" property="commissionRate" />
+        <result column="commission_sub_total" property="commissionSubTotal" />
+        <result column="inventory_quantity" property="inventoryQuantity" />
+        <result column="current_lock_quantity" property="currentLockQuantity" />
+        <result column="real_lock_quantity" property="realLockQuantity" />
+        <result column="real_purchase_quantity" property="realPurchaseQuantity" />
+        <result column="need_pur_quantity" property="needPurQuantity" />
+        <result column="order_gross_profit_rate" property="orderGrossProfitRate" />
+        <result column="vender_delivery_date" property="venderDeliveryDate" />
+        <result column="qty_per_outerbox" property="qtyPerOuterbox" />
+        <result column="qty_per_innerbox" property="qtyPerInnerbox" />
+        <result column="box_count" property="boxCount" />
+        <result column="volume" property="volume" />
+        <result column="reorder_flag" property="reorderFlag" />
+        <result column="hs_code" property="hsCode" />
+        <result column="tax_refund_rate" property="taxRefundRate" />
+        <result column="real_tax_refund_rate" property="realTaxRefundRate" />
+        <result column="booking_flag" property="bookingFlag" />
+        <result column="status" property="status" />
+        <result column="sku_id" property="skuId" />
+        <result column="own_brand_flag" property="ownBrandFlag" />
+        <result column="cust_pro_flag" property="custProFlag" />
+        <result column="sku_type" property="skuType" />
+        <result column="commodity_inspection_flag" property="commodityInspectionFlag" />
+        <result column="shipped_quantity" property="shippedQuantity" />
+        <result column="transfer_shipped_quantity" property="transferShippedQuantity" />
+        <result column="unique_code" property="uniqueCode" />
+        <result column="source_unique_code" property="sourceUniqueCode" />
+        <result column="hs_measure_unit" property="hsMeasureUnit" />
+        <result column="bill_status" property="billStatus" />
+        <result column="abnormal_status" property="abnormalStatus" />
+        <result column="abnormal_remark" property="abnormalRemark" />
+        <result column="bill_quantity" property="billQuantity" />
+        <result column="convert_shipment_flag" property="convertShipmentFlag" />
+        <result column="shipment_total_quantity" property="shipmentTotalQuantity" />
+        <result column="convert_purchase_flag" property="convertPurchaseFlag" />
+        <result column="re_lock_flag" property="reLockFlag" />
+        <result column="tax_rate" property="taxRate" />
+        <result column="measure_unit" property="measureUnit" />
+        <result column="split_flag" property="splitFlag" />
+        <result column="split_purchase_flag" property="splitPurchaseFlag" />
+        <result column="split_purchase_quantity" property="splitPurchaseQuantity" />
+        <result column="conver_notice_flag" property="converNoticeFlag" />
+        <result column="split_box_flag" property="splitBoxFlag" />
+        
+        <!-- 继承自BaseDO的字段 -->
+        <result column="creator" property="creator" />
+        <result column="create_time" property="createTime" />
+        <result column="updater" property="updater" />
+        <result column="update_time" property="updateTime" />
+        <result column="deleted" property="deleted" />
+        <result column="tenant_id" property="tenantId" />
+    </resultMap>
+
+    <!-- 产品模式扁平化响应映射 -->
+    <resultMap id="SaleContractProductModeResultMap" type="com.syj.eplus.module.sms.controller.admin.salecontract.vo.SaleContractProductModeRespVO">
+        <!-- 主表字段 -->
+        <result column="id" property="id" />
+        <result column="contractId" property="contractId" />
+        <result column="code" property="code" />
+        <result column="confirmFlag" property="confirmFlag" />
+        <result column="companyId" property="companyId" />
+        <result column="companyName" property="companyName" />
+        <result column="custId" property="custId" />
+        <result column="custCode" property="custCode" />
+        <result column="custName" property="custName" />
+        <result column="currency" property="currency" />
+        <result column="settlementTermType" property="settlementTermType" />
+        <result column="settlementId" property="settlementId" />
+        <result column="settlementName" property="settlementName" />
+        <result column="custCountryId" property="custCountryId" />
+        <result column="custCountryName" property="custCountryName" />
+        <result column="custPo" property="custPo" />
+        <result column="agentFlag" property="agentFlag" />
+        <result column="sales" property="sales" typeHandler="com.syj.eplus.framework.common.config.handler.JsonUserDeptTypeHandler" />
+        <result column="salesNickname" property="salesNickname" />
+        <result column="salesDeptName" property="salesDeptName" />
+        <result column="companyPath" property="companyPath" typeHandler="com.syj.eplus.framework.common.config.handler.JsonCompanyPathTypeHandler" />
+        <result column="inputDate" property="inputDate" />
+        <result column="custDeliveryDate" property="custDeliveryDate" />
+        <result column="saleType" property="saleType" />
+        <result column="creator" property="creator" />
+        <result column="creatorName" property="creatorName" />
+        <result column="creatorDeptName" property="creatorDeptName" />
+        <result column="createTime" property="createTime" />
+        <result column="auditStatus" property="auditStatus" />
+        <result column="status" property="status" />
+        <result column="signBackDate" property="signBackDate" />
+        <result column="exchangeRate" property="exchangeRate" />
+        <result column="printFlag" property="printFlag" />
+        
+        <!-- 明细字段 -->
+        <result column="sortNum" property="sortNum" />
+        <result column="skuCode" property="skuCode" />
+        <result column="basicSkuCode" property="basicSkuCode" />
+        <result column="cskuCode" property="cskuCode" />
+        <result column="name" property="name" />
+        <result column="nameEng" property="nameEng" />
+        <result column="mainPicture" property="mainPicture" typeHandler="com.syj.eplus.framework.common.config.handler.JsonFileTypeHandler" />
+        <result column="thumbnail" property="thumbnail" />
+        <result column="quantity" property="quantity" />
+        <result column="unitPrice" property="unitPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="totalSaleAmount" property="totalSaleAmount" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="totalSaleAmountUsd" property="totalSaleAmountUsd" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="purchaseUnitPrice" property="purchaseUnitPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="realPurchaseWithTaxPrice" property="realPurchaseWithTaxPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="purchaseWithTaxPrice" property="purchaseWithTaxPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="purchaseTotalPrice" property="purchaseTotalPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="purchaseCurrency" property="purchaseCurrency" />
+        <result column="venderName" property="venderName" />
+        <result column="venderId" property="venderId" />
+        <result column="venderCode" property="venderCode" />
+        <result column="inventoryQuantity" property="inventoryQuantity" />
+        <result column="currentLockQuantity" property="currentLockQuantity" />
+        <result column="realLockQuantity" property="realLockQuantity" />
+        <result column="realPurchaseQuantity" property="realPurchaseQuantity" />
+        <result column="needPurQuantity" property="needPurQuantity" />
+        <result column="unit" property="unit" />
+        <result column="orderGrossProfit" property="orderGrossProfit" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="orderGrossProfitRate" property="orderGrossProfitRate" />
+        <result column="venderDeliveryDate" property="venderDeliveryDate" />
+        <result column="qtyPerOuterbox" property="qtyPerOuterbox" />
+        <result column="qtyPerInnerbox" property="qtyPerInnerbox" />
+        <result column="boxCount" property="boxCount" />
+        <result column="volume" property="volume" />
+        <result column="reorderFlag" property="reorderFlag" />
+        <result column="hsCode" property="hsCode" />
+        <result column="packageType" property="packageType" typeHandler="com.syj.eplus.framework.common.config.handler.LongListTypeHandler" />
+        <result column="taxRefundRate" property="taxRefundRate" />
+        <result column="taxRefundPrice" property="taxRefundPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="itemStatus" property="itemStatus" />
+        <result column="purchaseUser" property="purchaseUser" typeHandler="com.syj.eplus.framework.common.config.handler.JsonUserDeptTypeHandler" />
+        <result column="purchaseUserNickname" property="purchaseUserNickname" />
+        <result column="purchaseUserDeptName" property="purchaseUserDeptName" />
+        <result column="skuId" property="skuId" />
+        <result column="skuType" property="skuType" />
+        <result column="ownBrandFlag" property="ownBrandFlag" />
+        <result column="shippedQuantity" property="shippedQuantity" />
+        <result column="transferShippedQuantity" property="transferShippedQuantity" />
+        <result column="billStatus" property="billStatus" />
+        <result column="billQuantity" property="billQuantity" />
+        <result column="manager" property="manager" typeHandler="com.syj.eplus.framework.common.config.handler.JsonUserDeptTypeHandler" />
+        <result column="managerNickname" property="managerNickname" />
+        <result column="managerDeptName" property="managerDeptName" />
+        <result column="withTaxPriceRemoveFree" property="withTaxPriceRemoveFree" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="lockMsg" property="lockMsg" typeHandler="com.syj.eplus.framework.common.config.handler.JsonLockListTypeHandler" />
+        <result column="stockLockPrice" property="stockLockPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+        <result column="stockLockTotalPrice" property="stockLockTotalPrice" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler" />
+    </resultMap>
+
+    <!-- 优化版：使用FIND_IN_SET字符串匹配,避免foreach和IN查询 -->
+    <select id="selectByContractIdStr" resultMap="SaleContractItemResultMap">
+        SELECT t.*
+        FROM sms_sale_contract_item t
+        WHERE FIND_IN_SET(t.contract_id, #{contractIdStr}) and deleted = 0
+    </select>
+
+    <!-- 批量查询优化版本：使用IN查询但添加索引提示 -->
+    <select id="selectByContractIds" resultMap="SaleContractItemResultMap">
+        SELECT t.*
+        FROM sms_sale_contract_item t
+        WHERE t.contract_id IN
+        <foreach collection="contractIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        AND t.deleted = 0
+        ORDER BY t.contract_id, t.sort_num
+    </select>
+
+    <!-- 产品模式分页查询（按明细分页，关联主表条件） -->
+    <select id="selectProductModePage" resultMap="SaleContractProductModeResultMap">
+        SELECT
+            <!-- 明细字段主键 -->
+            i.id AS id,
+            <!-- 主表字段 -->
+            c.id AS contractId,
+            c.code,
+            c.confirm_flag AS confirmFlag,
+            c.company_id AS companyId,
+            c.cust_id AS custId,
+            c.cust_code AS custCode,
+            c.cust_name AS custName,
+            c.currency,
+            c.settlement_term_type AS settlementTermType,
+            c.settlement_id AS settlementId,
+            c.settlement_name AS settlementName,
+            c.cust_country_id AS custCountryId,
+            c.cust_country_name AS custCountryName,
+            c.cust_po AS custPo,
+            c.agent_flag AS agentFlag,
+            c.sales,
+            NULLIF(JSON_UNQUOTE(JSON_EXTRACT(c.sales, '$.nickname')), 'null') AS salesNickname,
+            NULLIF(JSON_UNQUOTE(JSON_EXTRACT(c.sales, '$.deptName')), 'null') AS salesDeptName,
+            c.company_path AS companyPath,
+            c.input_date AS inputDate,
+            c.cust_delivery_date AS custDeliveryDate,
+            c.sale_type AS saleType,
+            c.creator,
+            c.create_time AS createTime,
+            c.audit_status AS auditStatus,
+            c.status,
+            c.sign_back_date AS signBackDate,
+            c.exchange_rate AS exchangeRate,
+            c.print_flag AS printFlag,
+            <!-- 明细字段 -->
+            i.sort_num AS sortNum,
+            i.sku_code AS skuCode,
+            i.basic_sku_code AS basicSkuCode,
+            i.csku_code AS cskuCode,
+            i.name,
+            i.name_eng AS nameEng,
+            i.main_picture AS mainPicture,
+            i.thumbnail,
+            i.quantity,
+            i.unit_price AS unitPrice,
+            i.total_sale_amount AS totalSaleAmount,
+            i.total_sale_amount_usd AS totalSaleAmountUsd,
+            i.purchase_unit_price AS purchaseUnitPrice,
+            i.real_purchase_with_tax_price AS realPurchaseWithTaxPrice,
+            i.purchase_with_tax_price AS purchaseWithTaxPrice,
+            i.purchase_total_price AS purchaseTotalPrice,
+            i.purchase_currency AS purchaseCurrency,
+            i.vender_name AS venderName,
+            i.vender_id AS venderId,
+            i.vender_code AS venderCode,
+            i.inventory_quantity AS inventoryQuantity,
+            i.current_lock_quantity AS currentLockQuantity,
+            i.real_lock_quantity AS realLockQuantity,
+            i.real_purchase_quantity AS realPurchaseQuantity,
+            i.need_pur_quantity AS needPurQuantity,
+            i.unit,
+            i.order_gross_profit AS orderGrossProfit,
+            i.order_gross_profit_rate AS orderGrossProfitRate,
+            i.vender_delivery_date AS venderDeliveryDate,
+            i.qty_per_outerbox AS qtyPerOuterbox,
+            i.qty_per_innerbox AS qtyPerInnerbox,
+            i.box_count AS boxCount,
+            i.volume,
+            i.reorder_flag AS reorderFlag,
+            i.hs_code AS hsCode,
+            i.package_type AS packageType,
+            i.tax_refund_rate AS taxRefundRate,
+            i.tax_refund_price AS taxRefundPrice,
+            i.status AS itemStatus,
+            i.purchase_user AS purchaseUser,
+            NULLIF(JSON_UNQUOTE(JSON_EXTRACT(i.purchase_user, '$.nickname')), 'null') AS purchaseUserNickname,
+            NULLIF(JSON_UNQUOTE(JSON_EXTRACT(i.purchase_user, '$.deptName')), 'null') AS purchaseUserDeptName,
+            i.sku_id AS skuId,
+            i.sku_type AS skuType,
+            i.own_brand_flag AS ownBrandFlag,
+            i.shipped_quantity AS shippedQuantity,
+            i.transfer_shipped_quantity AS transferShippedQuantity,
+            i.bill_status AS billStatus,
+            i.bill_quantity AS billQuantity,
+            i.manager,
+            NULLIF(JSON_UNQUOTE(JSON_EXTRACT(i.manager, '$.nickname')), 'null') AS managerNickname,
+            NULLIF(JSON_UNQUOTE(JSON_EXTRACT(i.manager, '$.deptName')), 'null') AS managerDeptName,
+            i.with_tax_price_remove_free AS withTaxPriceRemoveFree,
+            i.lock_msg AS lockMsg
+        FROM sms_sale_contract_item i
+        LEFT JOIN sms_sale_contract c ON i.contract_id = c.id
+        <where>
+            c.deleted = 0 AND i.deleted = 0
+            <!-- 明细条件 -->
+            <if test="req.basicSkuCode != null and req.basicSkuCode != ''">
+                AND i.basic_sku_code LIKE CONCAT('%', #{req.basicSkuCode}, '%')
+            </if>
+            <if test="req.cskuCode != null and req.cskuCode != ''">
+                AND i.csku_code LIKE CONCAT('%', #{req.cskuCode}, '%')
+            </if>
+            <if test="req.skuCode != null and req.skuCode != ''">
+                AND i.sku_code LIKE CONCAT('%', #{req.skuCode}, '%')
+            </if>
+            <if test="req.name != null and req.name != ''">
+                AND i.name LIKE CONCAT('%', #{req.name}, '%')
+            </if>
+            <if test="req.nameEng != null and req.nameEng != ''">
+                AND i.name_eng LIKE CONCAT('%', #{req.nameEng}, '%')
+            </if>
+            <!-- 优势产品条件：使用预查询的 SKU ID 列表 -->
+            <if test="req.advantageSkuIds != null and req.advantageSkuIds.size() > 0">
+                AND i.sku_id IN
+                <foreach collection="req.advantageSkuIds" item="skuId" open="(" separator="," close=")">
+                    #{skuId}
+                </foreach>
+            </if>
+            <!-- 主表条件 -->
+            <if test="req.code != null and req.code != ''">
+                AND c.code LIKE CONCAT('%', #{req.code}, '%')
+            </if>
+            <if test="req.companyId != null">
+                AND c.company_id = #{req.companyId}
+            </if>
+            <if test="req.custName != null and req.custName != ''">
+                AND c.cust_name LIKE CONCAT('%', #{req.custName}, '%')
+            </if>
+            <if test="req.custCode != null and req.custCode != ''">
+                AND c.cust_code LIKE CONCAT('%', #{req.custCode}, '%')
+            </if>
+            <if test="req.custPo != null and req.custPo != ''">
+                AND c.cust_po LIKE CONCAT('%', #{req.custPo}, '%')
+            </if>
+            <if test="req.custCountryId != null">
+                AND c.cust_country_id = #{req.custCountryId}
+            </if>
+            <if test="req.salesId != null">
+                AND JSON_EXTRACT(c.sales, '$.userId') = #{req.salesId}
+            </if>
+            <if test="req.salesDeptName != null and req.salesDeptName != ''">
+                AND JSON_EXTRACT(c.sales, '$.deptName') LIKE CONCAT('%', #{req.salesDeptName}, '%')
+            </if>
+            <if test="req.saleType != null">
+                AND c.sale_type = #{req.saleType}
+            </if>
+            <if test="req.auditStatus != null">
+                AND c.audit_status = #{req.auditStatus}
+            </if>
+            <if test="req.status != null">
+                AND c.status = #{req.status}
+            </if>
+            <if test="req.neStatus != null">
+                AND c.status != #{req.neStatus}
+            </if>
+            <if test="req.statusList != null and req.statusList.length > 0">
+                AND c.status IN
+                <foreach collection="req.statusList" item="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+            <if test="req.confirmFlag != null">
+                AND c.confirm_flag = #{req.confirmFlag}
+            </if>
+            <if test="req.autoFlag != null">
+                AND c.auto_flag = #{req.autoFlag}
+            </if>
+            <if test="req.createTime != null and req.createTime.length == 2">
+                AND c.create_time BETWEEN #{req.createTime[0]} AND #{req.createTime[1]}
+            </if>
+            <if test="req.signBackDate != null and req.signBackDate.length == 2">
+                AND c.sign_back_date BETWEEN #{req.signBackDate[0]} AND #{req.signBackDate[1]}
+            </if>
+            <if test="req.saleContractDate != null and req.saleContractDate.length == 2">
+                AND c.sale_contract_date BETWEEN #{req.saleContractDate[0]} AND #{req.saleContractDate[1]}
+            </if>
+            <if test="req.idList != null and req.idList.length > 0">
+                AND c.id IN
+                <foreach collection="req.idList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="req.custSourceType != null">
+                AND c.cust_code IN (
+                    SELECT code FROM crm_cust WHERE deleted = 0 AND source_type = #{req.custSourceType}
+                )
+            </if>
+        </where>
+        ORDER BY c.id DESC, i.sort_num ASC
+    </select>
+
+    <!-- 产品模式汇总查询（基于筛选后的明细） -->
+    <select id="selectProductModeSummary" resultType="com.syj.eplus.module.sms.dal.dataobject.salecontract.SaleContractProductModeSummaryDO">
+        SELECT
+            COALESCE(SUM(i.quantity), 0) AS sumQuantity,
+            COALESCE(SUM(i.box_count), 0) AS sumBoxCount,
+            COALESCE(SUM(i.volume), 0) AS sumVolume,
+            COALESCE(SUM(JSON_EXTRACT(i.total_sale_amount_usd, '$.amount')), 0) AS sumTotalSaleAmountUsd,
+            COALESCE(SUM(JSON_EXTRACT(i.total_sale_amount, '$.amount')), 0) AS sumTotalSaleAmount,
+            COALESCE(SUM(i.real_purchase_quantity), 0) AS sumRealPurchaseQuantity,
+            COALESCE(SUM(i.real_lock_quantity), 0) AS sumRealLockQuantity,
+            COALESCE(SUM(i.shipped_quantity), 0) AS sumShippedQuantity,
+            COALESCE(SUM(i.transfer_shipped_quantity), 0) AS sumTransferShippedQuantity
+        FROM sms_sale_contract_item i
+        LEFT JOIN sms_sale_contract c ON i.contract_id = c.id
+        <where>
+            c.deleted = 0 AND i.deleted = 0
+            <!-- 明细条件 -->
+            <if test="req.basicSkuCode != null and req.basicSkuCode != ''">
+                AND i.basic_sku_code LIKE CONCAT('%', #{req.basicSkuCode}, '%')
+            </if>
+            <if test="req.cskuCode != null and req.cskuCode != ''">
+                AND i.csku_code LIKE CONCAT('%', #{req.cskuCode}, '%')
+            </if>
+            <if test="req.skuCode != null and req.skuCode != ''">
+                AND i.sku_code LIKE CONCAT('%', #{req.skuCode}, '%')
+            </if>
+            <if test="req.name != null and req.name != ''">
+                AND i.name LIKE CONCAT('%', #{req.name}, '%')
+            </if>
+            <if test="req.nameEng != null and req.nameEng != ''">
+                AND i.name_eng LIKE CONCAT('%', #{req.nameEng}, '%')
+            </if>
+            <!-- 优势产品条件：使用预查询的 SKU ID 列表 -->
+            <if test="req.advantageSkuIds != null and req.advantageSkuIds.size() > 0">
+                AND i.sku_id IN
+                <foreach collection="req.advantageSkuIds" item="skuId" open="(" separator="," close=")">
+                    #{skuId}
+                </foreach>
+            </if>
+            <!-- 主表条件 -->
+            <if test="req.code != null and req.code != ''">
+                AND c.code LIKE CONCAT('%', #{req.code}, '%')
+            </if>
+            <if test="req.companyId != null">
+                AND c.company_id = #{req.companyId}
+            </if>
+            <if test="req.custName != null and req.custName != ''">
+                AND c.cust_name LIKE CONCAT('%', #{req.custName}, '%')
+            </if>
+            <if test="req.custCode != null and req.custCode != ''">
+                AND c.cust_code LIKE CONCAT('%', #{req.custCode}, '%')
+            </if>
+            <if test="req.custPo != null and req.custPo != ''">
+                AND c.cust_po LIKE CONCAT('%', #{req.custPo}, '%')
+            </if>
+            <if test="req.custCountryId != null">
+                AND c.cust_country_id = #{req.custCountryId}
+            </if>
+            <if test="req.salesId != null">
+                AND JSON_EXTRACT(c.sales, '$.userId') = #{req.salesId}
+            </if>
+            <if test="req.salesDeptName != null and req.salesDeptName != ''">
+                AND JSON_EXTRACT(c.sales, '$.deptName') LIKE CONCAT('%', #{req.salesDeptName}, '%')
+            </if>
+            <if test="req.saleType != null">
+                AND c.sale_type = #{req.saleType}
+            </if>
+            <if test="req.auditStatus != null">
+                AND c.audit_status = #{req.auditStatus}
+            </if>
+            <if test="req.status != null">
+                AND c.status = #{req.status}
+            </if>
+            <if test="req.neStatus != null">
+                AND c.status != #{req.neStatus}
+            </if>
+            <if test="req.statusList != null and req.statusList.length > 0">
+                AND c.status IN
+                <foreach collection="req.statusList" item="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+            <if test="req.confirmFlag != null">
+                AND c.confirm_flag = #{req.confirmFlag}
+            </if>
+            <if test="req.autoFlag != null">
+                AND c.auto_flag = #{req.autoFlag}
+            </if>
+            <if test="req.createTime != null and req.createTime.length == 2">
+                AND c.create_time BETWEEN #{req.createTime[0]} AND #{req.createTime[1]}
+            </if>
+            <if test="req.signBackDate != null and req.signBackDate.length == 2">
+                AND c.sign_back_date BETWEEN #{req.signBackDate[0]} AND #{req.signBackDate[1]}
+            </if>
+            <if test="req.saleContractDate != null and req.saleContractDate.length == 2">
+                AND c.sale_contract_date BETWEEN #{req.saleContractDate[0]} AND #{req.saleContractDate[1]}
+            </if>
+            <if test="req.idList != null and req.idList.length > 0">
+                AND c.id IN
+                <foreach collection="req.idList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="req.custSourceType != null">
+                AND c.cust_code IN (
+                    SELECT code FROM crm_cust WHERE deleted = 0 AND source_type = #{req.custSourceType}
+                )
+            </if>
+        </where>
+    </select>
+
+</mapper>

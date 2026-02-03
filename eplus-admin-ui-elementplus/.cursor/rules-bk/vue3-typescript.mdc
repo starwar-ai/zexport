@@ -1,0 +1,261 @@
+---
+alwaysApply: true
+---
+
+# Vue3 + TypeScript 核心规范
+
+## 技术栈
+
+- **Vue 3.3.8+** - 使用 Composition API 和 `<script setup>` 语法
+- **TypeScript 5.0+** - 严格类型检查，启用严格模式
+- **Element Plus 2.4.2** - UI 组件库
+- **Vite 4.x** - 构建工具
+- **Pinia 2.1.7** - 状态管理
+- **Vue Router 4.2.5** - 路由管理
+- **Vue I18n 9.6.5** - 国际化
+
+## Vue 组件规范
+
+### 组件结构
+
+````vue
+<template>
+  <!-- 模板内容 -->
+</template>
+
+<script setup lang="ts">
+// 导入
+import { ref, computed } from 'vue'
+import type { ComponentProps } from './types'
+
+// 接口定义
+interface Props {
+  title: string
+  loading?: boolean
+}
+
+// Props 定义
+const props = withDefaults(defineProps<Props>(), {
+  loading: false
+})
+
+// Emits 定义
+const emit = defineEmits<{
+  change: [value: string]
+  submit: [data: any]
+}>()
+
+// 响应式数据
+const count = ref(0)
+const isLoading = ref(false)
+
+// 计算属性
+const displayTitle = computed(() => {
+  return props.loading ? '加载中...' : props.title
+})
+
+// 方法
+const handleClick = () => {
+  count.value++
+  emit('change', count.value.toString())
+}
+
+// 生命周期
+onMounted(() => {
+  console.log('组件已挂载')
+})
+</script>
+
+<style lang="scss" scoped>
+.component-name {
+  // 样式
+}
+</style>
+
+### 组件命名规范
+- 使用 PascalCase 命名组件
+- 组件名应该是多个单词，避免与 HTML 元素冲突
+- 自定义组件以 `Eplus` 开头，如 `EplusButton`、`EplusTable`
+
+## TypeScript 规范
+
+### 类型定义
+```typescript
+// 接口定义
+interface UserInfo {
+  id: number
+  name: string
+  email: string
+  avatar?: string
+}
+
+// 类型别名
+type ApiResponse<T> = {
+  code: number
+  data: T
+  message: string
+}
+
+// 枚举
+enum UserStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  PENDING = 'pending'
+}
+
+// 泛型
+function createApi<T>(url: string): Promise<ApiResponse<T>> {
+  // 实现
+}
+````
+
+### 严格类型检查
+
+- 启用 `strict: true`
+- 避免使用 `any` 类型
+- 使用 `unknown` 替代 `any`
+- 为函数参数和返回值添加类型注解
+
+## 文件命名规范
+
+- **组件文件**: 使用 PascalCase，如 `UserProfile.vue`
+- **工具文件**: 使用 camelCase，如 `dateUtils.ts`
+- **常量文件**: 使用 UPPER_SNAKE_CASE，如 `API_CONSTANTS.ts`
+- **类型文件**: 使用 PascalCase，如 `UserTypes.ts`
+
+## 最佳实践
+
+1. 使用 `<script setup>` 语法
+2. 充分利用 TypeScript 类型系统
+3. 避免在模板中使用复杂的逻辑
+4. 合理使用计算属性和监听器
+5. 注意内存泄漏，及时清理事件监听器
+
+# Vue3 + TypeScript 核心规范
+
+## 技术栈
+
+- **Vue 3.3.8+** - 使用 Composition API 和 `<script setup>` 语法
+- **TypeScript 5.0+** - 严格类型检查，启用严格模式
+- **Element Plus 2.4.2** - UI 组件库
+- **Vite 4.x** - 构建工具
+- **Pinia 2.1.7** - 状态管理
+- **Vue Router 4.2.5** - 路由管理
+- **Vue I18n 9.6.5** - 国际化
+
+## Vue 组件规范
+
+### 组件结构
+
+````vue
+<template>
+  <!-- 模板内容 -->
+</template>
+
+<script setup lang="ts">
+// 导入
+import { ref, computed } from 'vue'
+import type { ComponentProps } from './types'
+
+// 接口定义
+interface Props {
+  title: string
+  loading?: boolean
+}
+
+// Props 定义
+const props = withDefaults(defineProps<Props>(), {
+  loading: false
+})
+
+// Emits 定义
+const emit = defineEmits<{
+  change: [value: string]
+  submit: [data: any]
+}>()
+
+// 响应式数据
+const count = ref(0)
+const isLoading = ref(false)
+
+// 计算属性
+const displayTitle = computed(() => {
+  return props.loading ? '加载中...' : props.title
+})
+
+// 方法
+const handleClick = () => {
+  count.value++
+  emit('change', count.value.toString())
+}
+
+// 生命周期
+onMounted(() => {
+  console.log('组件已挂载')
+})
+</script>
+
+<style lang="scss" scoped>
+.component-name {
+  // 样式
+}
+</style>
+
+### 组件命名规范
+- 使用 PascalCase 命名组件
+- 组件名应该是多个单词，避免与 HTML 元素冲突
+- 自定义组件以 `Eplus` 开头，如 `EplusButton`、`EplusTable`
+
+## TypeScript 规范
+
+### 类型定义
+```typescript
+// 接口定义
+interface UserInfo {
+  id: number
+  name: string
+  email: string
+  avatar?: string
+}
+
+// 类型别名
+type ApiResponse<T> = {
+  code: number
+  data: T
+  message: string
+}
+
+// 枚举
+enum UserStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  PENDING = 'pending'
+}
+
+// 泛型
+function createApi<T>(url: string): Promise<ApiResponse<T>> {
+  // 实现
+}
+````
+
+### 严格类型检查
+
+- 启用 `strict: true`
+- 避免使用 `any` 类型
+- 使用 `unknown` 替代 `any`
+- 为函数参数和返回值添加类型注解
+
+## 文件命名规范
+
+- **组件文件**: 使用 PascalCase，如 `UserProfile.vue`
+- **工具文件**: 使用 camelCase，如 `dateUtils.ts`
+- **常量文件**: 使用 UPPER_SNAKE_CASE，如 `API_CONSTANTS.ts`
+- **类型文件**: 使用 PascalCase，如 `UserTypes.ts`
+
+## 最佳实践
+
+1. 使用 `<script setup>` 语法
+2. 充分利用 TypeScript 类型系统
+3. 避免在模板中使用复杂的逻辑
+4. 合理使用计算属性和监听器
+5. 注意内存泄漏，及时清理事件监听器

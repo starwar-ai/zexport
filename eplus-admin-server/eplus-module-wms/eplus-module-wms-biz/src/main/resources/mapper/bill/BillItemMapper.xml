@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syj.eplus.module.wms.dal.mysql.bill.BillItemMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+
+<!--    <resultMap id="billItemMap" type="com.syj.eplus.module.wms.dal.dataobject.bill.BillItemDO">-->
+<!--        <result property="outerboxGrossweight" column="outerbox_grossweight" typeHandler="com.syj.eplus.framework.common.config.handler.JsonWeightTypeHandler"/>-->
+<!--        <result property="totalWeight" column="total_weight" typeHandler="com.syj.eplus.framework.common.config.handler.JsonWeightTypeHandler"/>-->
+<!--        <result property="palletWeight" column="pallet_weight" typeHandler="com.syj.eplus.framework.common.config.handler.JsonWeightTypeHandler"/>-->
+<!--        <result property="sheller" column="sheller" typeHandler="com.syj.eplus.framework.common.config.handler.JsonUserDeptTypeHandler"/>-->
+<!--        <result property="price" column="price" typeHandler="com.syj.eplus.framework.common.config.handler.JsonAmountTypeHandler"/>-->
+<!--    </resultMap>-->
+
+<!--    <select id="selectListBySourceId" resultMap="billItemMap">-->
+<!--        select * from wms_bill_item-->
+<!--        <where>-->
+<!--           <if test="sourceIdList != null and sourceIdList.size > 0">-->
+<!--                deleted = 0 AND source_id in-->
+<!--               <foreach collection='sourceIdList' item='sourceId' open='(' separator=',' close=')'>-->
+<!--                   #{sourceId}-->
+<!--               </foreach>-->
+<!--           </if>-->
+<!--        </where>-->
+<!--    </select>-->
+</mapper>

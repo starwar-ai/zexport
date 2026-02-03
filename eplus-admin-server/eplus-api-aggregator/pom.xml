@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.iocoder.boot</groupId>
+        <artifactId>yudao</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>eplus-api-aggregator</artifactId>
+    <packaging>pom</packaging>
+
+    <name>${project.artifactId}</name>
+    <description>
+        API聚合模块,统一管理所有业务模块的API依赖
+        优点:
+        1. 简化业务模块的依赖声明,只需引入本模块即可获得所有API
+        2. 统一API版本管理,避免版本不一致
+        3. 减少POM文件的维护成本
+    </description>
+
+    <dependencies>
+        <!-- ========== 系统核心模块 API ========== -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-module-system-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-module-infra-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-module-bpm-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- ========== Eplus 扩展模块 API ========== -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-infra-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- ========== 业务模块 API - 供应链管理 ========== -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-scm-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-pms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-wms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- ========== 业务模块 API - 销售与客户 ========== -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-sms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-crm-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- ========== 业务模块 API - 财务管理 ========== -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-fms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- ========== 业务模块 API - 质量与文档 ========== -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-qms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-dms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- ========== 业务模块 API - 办公与协作 ========== -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-oa-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-home-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- ========== 业务模块 API - 专项管理 ========== -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-ems-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-mms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-exms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-pjms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-dtms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-dpms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <!-- ========== 业务模块 API - 报表 ========== -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-report-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+    </dependencies>
+
+</project>

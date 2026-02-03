@@ -1,0 +1,67 @@
+<script setup lang="ts">
+import { onMounted, provide, watch } from 'vue'
+import { propTypes } from '@/utils/propTypes'
+import { ComponentSize, ElConfigProvider } from 'element-plus'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import { useWindowSize } from '@vueuse/core'
+import { useAppStore } from '@/store/modules/app'
+import { setCssVar } from '@/utils'
+import { useDesign } from '@/hooks/web/useDesign'
+
+const { variables } = useDesign()
+
+const appStore = useAppStore()
+
+const props = defineProps({
+  size: propTypes.oneOf<ComponentSize>(['default', 'small', 'large']).def('small')
+})
+
+provide('configGlobal', props)
+
+// 初始化所有主题色
+onMounted(() => {
+  appStore.setCssVarTheme()
+  appStore.setLayout('mini')
+  appStore.setCollapse(true)
+  appStore.setFooter(false)
+  appStore.setFixedHeader(false)
+})
+
+const { width } = useWindowSize()
+
+// 监听窗口变化
+watch(
+  () => width.value,
+  (width: number) => {
+    if (width < 768) {
+      appStore.getMobile ? appStore.setMobile(true) : undefined
+      setCssVar('--left-menu-min-width', '0')
+      //appStore.getLayout !== 'mini' ? appStore.setLayout('mini') : undefined
+    } else {
+      appStore.getMobile ? appStore.setMobile(false) : undefined
+      setCssVar('--left-menu-min-width', '64px')
+      //appStore.getLayout !== 'mini' ? appStore.setLayout('mini') : undefined
+    }
+  },
+  {
+    immediate: true
+  }
+)
+
+// 多语言相关 - 使用中文语言包
+const locale = zhCn
+</script>
+
+<template>
+  <ElConfigProvider
+    :namespace="variables.elNamespace"
+    :locale="locale"
+    :message="{ max: 1 }"
+    :size="size"
+    :button="{
+      autoInsertSpace: true
+    }"
+  >
+    <slot></slot>
+  </ElConfigProvider>
+</template>

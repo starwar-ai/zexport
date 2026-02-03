@@ -1,0 +1,433 @@
+---
+name: development-workflow-skill
+description: 开发工作流和最佳实践。提供目录结构、开发工具配置、代码提交规范、组件开发规范、工具函数规范、国际化规范、安全规范等。当配置开发环境、编写组件、提交代码时使用此技能。
+---
+
+# 开发工作流和最佳实践
+
+## 何时使用
+
+- 配置开发环境时
+- 编写组件代码时
+- 提交代码时
+- 配置 ESLint 和 Prettier 时
+- 实现国际化时
+- 实现安全防护时
+
+## 目录结构规范
+
+```
+src/
+├── api/           # API 接口
+│   ├── user.ts
+│   ├── system.ts
+│   └── index.ts
+├── assets/        # 静态资源
+│   ├── images/
+│   ├── icons/
+│   └── styles/
+├── components/    # 公共组件
+│   ├── EplusButton/
+│   ├── EplusTable/
+│   └── index.ts
+├── config/        # 配置文件
+│   ├── constants.ts
+│   └── settings.ts
+├── directives/    # 自定义指令
+│   ├── permission.ts
+│   └── index.ts
+├── hooks/         # 组合式函数
+│   ├── useTable.ts
+│   ├── useForm.ts
+│   └── index.ts
+├── layout/        # 布局组件
+│   ├── components/
+│   └── index.vue
+├── locales/       # 国际化文件
+│   ├── zh-CN.ts
+│   ├── en-US.ts
+│   └── index.ts
+├── plugins/       # 插件配置
+│   ├── element-plus.ts
+│   └── index.ts
+├── router/        # 路由配置
+│   ├── index.ts
+│   ├── guard.ts
+│   └── routes.ts
+├── store/         # 状态管理
+│   ├── user.ts
+│   ├── app.ts
+│   └── index.ts
+├── styles/        # 样式文件
+│   ├── variables.scss
+│   ├── mixins.scss
+│   └── index.scss
+├── types/         # TypeScript 类型定义
+│   ├── api.ts
+│   ├── user.ts
+│   └── index.ts
+├── utils/         # 工具函数
+│   ├── request.ts
+│   ├── auth.ts
+│   └── index.ts
+└── views/         # 页面组件
+    ├── dashboard/
+    ├── user/
+    └── login/
+```
+
+## 开发工具配置
+
+### ESLint 配置
+
+```javascript
+// .eslintrc.js
+module.exports = {
+  root: true,
+  env: {
+    browser: true,
+    node: true,
+    es6: true
+  },
+  extends: [
+    'plugin:vue/vue3-recommended',
+    'eslint:recommended',
+    '@vue/eslint-config-typescript',
+    '@vue/eslint-config-prettier/skip-formatting'
+  ],
+  rules: {
+    'vue/max-attributes-per-line': [
+      'warn',
+      {
+        singleline: { max: 1 },
+        multiline: { max: 1 }
+      }
+    ],
+    'vue/script-setup-uses-vars': 'error',
+    '@typescript-eslint/no-explicit-any': 'warn',
+    'no-unused-vars': 'off',
+    '@typescript-eslint/no-unused-vars': 'warn'
+  }
+}
+```
+
+### Prettier 配置
+
+```javascript
+// prettier.config.js
+module.exports = {
+  printWidth: 100,
+  tabWidth: 2,
+  useTabs: false,
+  semi: false,
+  singleQuote: true,
+  quoteProps: 'as-needed',
+  bracketSpacing: true,
+  trailingComma: 'none',
+  arrowParens: 'always',
+  singleAttributePerLine: true,
+  proseWrap: 'never',
+  htmlWhitespaceSensitivity: 'strict',
+  endOfLine: 'auto'
+}
+```
+
+## 代码提交规范
+
+### Git 提交信息格式
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+### 提交类型
+
+- `feat`: 新功能
+- `fix`: 修复 bug
+- `docs`: 文档更新
+- `style`: 代码格式化
+- `refactor`: 代码重构
+- `test`: 测试相关
+- `chore`: 构建过程或辅助工具的变动
+
+### 示例
+
+```
+feat(user): 添加用户管理功能
+
+- 新增用户列表页面
+- 实现用户增删改查功能
+- 添加用户权限控制
+
+Closes #123
+```
+
+## 环境配置
+
+### 环境变量
+
+```bash
+# .env.development
+VITE_BASE_URL=http://localhost:48080
+VITE_PORT=3000
+VITE_OPEN=true
+VITE_DROP_CONSOLE=false
+VITE_DROP_DEBUGGER=false
+
+# .env.production
+VITE_BASE_URL=https://api.example.com
+VITE_DROP_CONSOLE=true
+VITE_DROP_DEBUGGER=true
+```
+
+### 开发脚本
+
+```json
+{
+  "scripts": {
+    "dev": "vite --mode dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .vue,.js,.ts",
+    "lint:fix": "eslint src --ext .vue,.js,.ts --fix",
+    "format": "prettier --write src",
+    "type-check": "vue-tsc --noEmit",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage"
+  }
+}
+```
+
+## 组件开发规范
+
+### 组件文档模板
+
+```vue
+<!--
+  @description 用户信息卡片组件
+  @author 波波
+  @date 2024-01-01
+-->
+<template>
+  <div class="user-card">
+    <el-card>
+      <template #header>
+        <div class="card-header">
+          <span>{{ title }}</span>
+          <el-button
+            v-if="editable"
+            @click="handleEdit"
+            >编辑</el-button
+          >
+        </div>
+      </template>
+
+      <div class="card-content">
+        <slot />
+      </div>
+    </el-card>
+  </div>
+</template>
+
+<script setup lang="ts">
+interface Props {
+  title: string
+  editable?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  editable: false
+})
+
+const emit = defineEmits<{
+  edit: []
+}>()
+
+const handleEdit = () => {
+  emit('edit')
+}
+</script>
+
+<style lang="scss" scoped>
+.user-card {
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-content {
+    padding: 16px 0;
+  }
+}
+</style>
+```
+
+## 工具函数规范
+
+### 工具函数模板
+
+```typescript
+/**
+ * 格式化日期
+ * @param date 日期对象或字符串
+ * @param format 格式化模板，默认为 'YYYY-MM-DD'
+ * @returns 格式化后的日期字符串
+ * @example
+ * formatDate(new Date()) // '2024-01-01'
+ * formatDate('2024-01-01', 'YYYY/MM/DD') // '2024/01/01'
+ */
+export function formatDate(date: Date | string, format = 'YYYY-MM-DD'): string {
+  return dayjs(date).format(format)
+}
+
+/**
+ * 防抖函数
+ * @param func 要防抖的函数
+ * @param wait 等待时间（毫秒）
+ * @returns 防抖后的函数
+ */
+export function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout
+
+  return (...args: Parameters<T>) => {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => func(...args), wait)
+  }
+}
+```
+
+## 国际化规范
+
+### 语言包结构
+
+```typescript
+// locales/zh-CN.ts
+export default {
+  common: {
+    confirm: '确认',
+    cancel: '取消',
+    save: '保存',
+    delete: '删除',
+    edit: '编辑',
+    add: '新增',
+    search: '搜索',
+    reset: '重置'
+  },
+  user: {
+    title: '用户管理',
+    name: '姓名',
+    email: '邮箱',
+    phone: '手机号',
+    status: '状态',
+    createTime: '创建时间'
+  },
+  message: {
+    saveSuccess: '保存成功',
+    deleteSuccess: '删除成功',
+    confirmDelete: '确认删除吗？',
+    noPermission: '没有权限'
+  }
+}
+```
+
+### 使用示例
+
+```vue
+<template>
+  <div>
+    <h1>{{ $t('user.title') }}</h1>
+    <el-button @click="handleSave">
+      {{ $t('common.save') }}
+    </el-button>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
+const handleSave = () => {
+  ElMessage.success(t('message.saveSuccess'))
+}
+</script>
+```
+
+## 安全规范
+
+### XSS 防护
+
+```typescript
+// utils/security.ts
+import DOMPurify from 'dompurify'
+
+/**
+ * 清理 HTML 内容，防止 XSS 攻击
+ * @param html HTML 字符串
+ * @returns 清理后的 HTML 字符串
+ */
+export function sanitizeHtml(html: string): string {
+  return DOMPurify.sanitize(html)
+}
+
+/**
+ * 验证输入内容
+ * @param input 输入内容
+ * @param type 验证类型
+ * @returns 是否通过验证
+ */
+export function validateInput(input: string, type: 'email' | 'phone' | 'url'): boolean {
+  const patterns = {
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    phone: /^1[3-9]\d{9}$/,
+    url: /^https?:\/\/.+/i
+  }
+
+  return patterns[type].test(input)
+}
+```
+
+### 权限控制
+
+```typescript
+// directives/permission.ts
+import type { Directive } from 'vue'
+import { useUserStore } from '@/store/user'
+
+export const permission: Directive = {
+  mounted(el, binding) {
+    const userStore = useUserStore()
+    const { value } = binding
+
+    if (value && !userStore.hasPermission(value)) {
+      el.parentNode?.removeChild(el)
+    }
+  }
+}
+
+// 使用示例
+<template>
+  <el-button v-permission="'user:create'">新增用户</el-button>
+</template>
+```
+
+## 最佳实践总结
+
+1. **代码组织** - 按功能模块组织代码
+2. **类型安全** - 充分利用 TypeScript
+3. **组件设计** - 保持组件单一职责
+4. **性能优化** - 合理使用懒加载和缓存
+5. **错误处理** - 统一错误处理机制
+6. **测试覆盖** - 编写单元测试和集成测试
+7. **文档维护** - 及时更新组件文档
+8. **代码质量** - 使用 ESLint 和 Prettier
+9. **安全防护** - 防止 XSS 和权限漏洞
+10. **国际化** - 支持多语言

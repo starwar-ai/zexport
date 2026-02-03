@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syj.eplus.module.infra.dal.mysql.orderlink.OrderLinkMapper">
+
+    <!-- 安全的查询方法：通过sourceUniqueCode列表检查是否存在订单链路 -->
+    <select id="existsBySourceUniqueCodes" resultType="java.lang.Boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM order_link
+            WHERE
+            <foreach collection="uniqueCodes" item="code" separator=" OR ">
+                JSON_CONTAINS(item, JSON_OBJECT('sourceUniqueCode', #{code}))
+            </foreach>
+        )
+    </select>
+
+</mapper>

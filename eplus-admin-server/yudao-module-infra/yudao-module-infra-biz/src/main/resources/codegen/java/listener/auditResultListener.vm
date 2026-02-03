@@ -1,0 +1,24 @@
+package com.syj.eplus.module.pms.listener;
+
+import cn.iocoder.yudao.module.bpm.framework.bpm.core.event.BpmProcessInstanceResultEvent;
+import cn.iocoder.yudao.module.bpm.framework.bpm.core.event.BpmProcessInstanceResultEventListener;
+import ${basePackage}.module.${table.moduleName}.service.${table.businessName}.${table.className}Service;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+
+
+@Component
+public class ${sceneEnum.prefixClass}${table.className}AuditResultListener extends BpmProcessInstanceResultEventListener {
+@Resource
+private ${sceneEnum.prefixClass}${table.className}Service ${classNameVar}Service;
+@Override
+protected String getProcessDefinitionKey() {
+return ${classNameVar}Service.getProcessDefinitionKey();
+}
+
+@Override
+protected void onEvent(BpmProcessInstanceResultEvent event) {
+${classNameVar}Service.updateAuditStatus(Long.parseLong(event.getBusinessKey()), event.getResult());
+}
+}

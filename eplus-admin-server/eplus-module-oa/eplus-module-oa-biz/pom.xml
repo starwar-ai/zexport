@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.iocoder.boot</groupId>
+        <artifactId>eplus-module-oa</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>eplus-module-oa-biz</artifactId>
+    <packaging>jar</packaging> 
+    <name>${project.artifactId}</name> 
+
+
+    <dependencies>  
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-oa-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-fms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-exms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-pjms-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-home-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-scm-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-crm-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-operatelog</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-excel</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-data-permission</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-common</artifactId>
+            <version>${revision}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-security</artifactId>
+        </dependency>
+
+        
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-mybatis</artifactId>
+        </dependency>
+
+        
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>yudao-spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+</dependency>
+
+        <!-- eplus-module-infra-biz 依赖已移除 - 违反 biz 不依赖 biz 的架构规则 -->
+        <!-- 如需使用 infra 模块功能,请通过 eplus-module-infra-api 或 yudao-module-infra-api -->
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-infra-api</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-ems-api</artifactId>
+            <version>${revision}</version>
+            </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-sms-api</artifactId>
+            <version>${revision}</version>
+            </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-report-api</artifactId>
+            <version>${revision}</version>
+            </dependency>
+        <dependency>
+            <groupId>com.deepoove</groupId>
+            <artifactId>poi-tl</artifactId>
+            <version>1.12.2</version>
+            </dependency>
+        <dependency>
+            <groupId>cn.iocoder.boot</groupId>
+            <artifactId>eplus-module-dms-api</artifactId>
+            <version>1.0.0</version>
+            </dependency>
+    <dependency>
+<groupId>cn.iocoder.boot</groupId>
+<artifactId>yudao-module-bpm-api</artifactId>
+<version>${revision}</version>
+</dependency>
+<dependency>
+<groupId>cn.iocoder.boot</groupId>
+<artifactId>yudao-module-system-api</artifactId>
+<version>${revision}</version>
+</dependency>
+<dependency>
+<groupId>cn.iocoder.boot</groupId>
+<artifactId>yudao-module-infra-api</artifactId>
+<version>${revision}</version>
+</dependency>
+<dependency>
+<groupId>cn.iocoder.boot</groupId>
+<artifactId>yudao-spring-boot-starter-job</artifactId>
+</dependency>
+<dependency>
+<groupId>cn.iocoder.boot</groupId>
+<artifactId>eplus-module-social</artifactId>
+<version>${revision}</version>
+</dependency>
+</dependencies>
+</project>

@@ -1,0 +1,50 @@
+---
+alwaysApply: true
+---
+## 1. 代码结构
+- 按照“分层架构”组织代码，常见分层包括：controller、service、service.impl、dao（mapper）、domain（entity/vo/dto）、config、util、exception、constant、enums 等。
+- 每个业务模块（如用户、订单、商品等）单独建包，包内再按分层组织。
+- 公共组件、工具类、常量、枚举等统一放在 framework 或 common 包下。
+- 严禁出现“杂项”包（如 util2、common1 等），避免包名无实际意义。
+
+## 2. 命名规范
+- 包名统一小写，采用单数形式，禁止使用下划线。
+- 类名采用大驼峰（PascalCase），接口以 I 开头或以 Service/Mapper 结尾。
+- 方法名、变量名采用小驼峰（camelCase），见名知意，避免拼音、缩写。
+- 常量名全大写，单词间用下划线分隔。
+- DTO/VO/BO/DO/PO 等命名需与实际用途一致，避免混用。
+- 枚举类以 Enum 结尾，枚举值全大写。
+
+## 3. 注释规范
+- 所有类、接口、方法必须有 Javadoc 注释，描述功能、参数、返回值、异常等。
+- 复杂业务逻辑、关键算法需有详细行内注释，说明实现思路。
+- 公共 API 必须补充注释，便于自动生成接口文档。
+- 禁止无意义注释（如“get/set 方法”），禁止注释掉无用代码。
+
+## 4. 异常与日志
+- 统一使用自定义业务异常（如 BizException），禁止直接抛出 Exception、Throwable。
+- 异常分为系统异常和业务异常，分别处理，避免吞异常。
+- 日志采用 slf4j，严禁使用 System.out/err。
+- 日志分级输出（info、warn、error），敏感信息不得打印。
+- 关键操作、异常 catch 必须有日志，便于问题追踪。
+
+## 5. 接口设计
+- API 路径遵循 RESTful 风格，资源名用复数，动词用 HTTP 方法表达。
+- 入参、出参统一使用 DTO/VO，禁止直接暴露 Entity。
+- 接口返回统一包装（如 Result<T>），包含 code、msg、data。
+- 参数校验采用注解（如 @Valid、@NotNull），避免手动校验。
+- 接口需补充 Swagger/OpenAPI 注解，便于自动生成文档。
+
+## 6. 测试覆盖
+- 关键业务逻辑必须有单元测试，覆盖率不低于 80%。
+- 单元测试与主代码分离，放在 test 目录下，命名以 Test 结尾。
+- 测试用例应覆盖正常、异常、边界场景。
+- Mock 外部依赖，保证测试独立性。
+- CI 流程中集成自动化测试，保证主干分支稳定。
+
+## 7. 分支与发布
+- 采用 Git Flow 或 Trunk Based Development 工作流。
+- 主干分支（main/master）只保留稳定可发布代码，开发分支（feature/bugfix）按需创建。
+- 合并分支需走 PR 流程，强制代码评审和自动化测试通过。
+- 发布版本需打 tag，记录变更日志。
+- 严禁直接在主干分支开发和推送。 

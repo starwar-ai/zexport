@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>yudao</artifactId>
+        <groupId>cn.iocoder.boot</groupId>
+        <version>${revision}</version> <!-- 1. 修改 version 为 ${revision} -->
+    </parent>
+
+    <packaging>pom</packaging> <!-- 2. 新增 packaging 为 pom -->
+
+    <artifactId>eplus-module-infra</artifactId>
+    <modules>
+        <module>eplus-module-infra-api</module>
+        <module>eplus-module-infra-biz</module>
+    </modules>
+</project>

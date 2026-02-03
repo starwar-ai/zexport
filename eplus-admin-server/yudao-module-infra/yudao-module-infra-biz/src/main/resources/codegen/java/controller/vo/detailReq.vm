@@ -1,0 +1,16 @@
+package ${basePackage}.module.${table.moduleName}.controller.${sceneEnum.basePackage}.${table.businessName}.vo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Data;
+
+
+@Data
+public class ${sceneEnum.prefixClass}${table.className}DetailReq {
+
+    @Schema(description = "流程任务名", example = "eplus")
+    private String processInstanceId;
+
+    @Schema(description = "${table.classComment}id", example = "1")
+    private Long ${classNameVar}Id;
+
+}

@@ -1,0 +1,23 @@
+# EPlus Data Analytics Dashboard
+# Python 3.10+
+
+# Web Framework
+streamlit>=1.29.0
+streamlit-echarts>=0.4.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Database
+sqlalchemy>=2.0.0
+pymysql>=1.1.0
+
+# Charts
+pyecharts>=2.0.0
+
+# Excel Export
+openpyxl>=3.1.0
+
+# Utilities
+python-dotenv>=1.0.0

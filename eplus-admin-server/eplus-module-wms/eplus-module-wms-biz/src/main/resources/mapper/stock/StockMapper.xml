@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.syj.eplus.module.wms.dal.mysql.stock.StockMapper">
+
+    <!--
+        一般情况下，尽可能使用 Mapper 进行 CRUD 增删改查即可。
+        无法满足的场景，例如说多表关联查询，才使用 XML 编写 SQL。
+        代码生成器暂时只生成 Mapper XML 文件本身，更多推荐 MybatisX 快速开发插件来生成查询。
+        文档可见：https://www.iocoder.cn/MyBatis/x-plugins/
+     -->
+    <sql id="queryStock">
+        SELECT
+            MAX(id) id,
+            MAX(cust_id) cust_id,
+            MAX(cust_name) cust_name,
+            MAX(csku_code) csku_code,
+            MAX(cust_po) cust_po,
+            MAX(sku_id) sku_id,
+            MAX(sku_code) sku_code,
+            MAX(sku_name) sku_name,
+            MAX(own_brand_flag) own_brand_flag,
+            MAX(cust_pro_flag) cust_pro_flag,
+            SUM( init_quantity ) total_init_quantity,
+            SUM( used_quantity ) total_used_quantity,
+            SUM( lock_quantity ) total_lock_quantity,
+            SUM( producing_quantity ) total_producing_quantity,
+            SUM( available_quantity ) total_available_quantity,
+--             MAX(outerbox_length) outerbox_length,
+--             MAX(outerbox_width) outerbox_width,
+--             MAX(outerbox_height) outerbox_height,
+            MAX(qty_per_outerbox) qty_per_outerbox,
+            MAX(qty_per_innerbox) qty_per_innerbox,
+            MAX(company_id) company_id,
+            MAX(company_name) company_name,
+            MAX(basic_sku_code) basic_sku_code,
+            MAX(purchase_user) purchase_user,
+            MAX(deleted) deleted
+        FROM
+            wms_stock
+    </sql>
+
+    <select id="listPage" parameterType="com.syj.eplus.module.wms.controller.admin.stock.vo.StockPageReqVO" resultType="com.syj.eplus.module.wms.controller.admin.stock.vo.StockRespVO">
+        <include refid="queryStock"/> where deleted = 0
+        GROUP BY
+            sku_code,
+            csku_code,
+            company_id
+        <trim prefix="having" suffixOverrides="and">
+            <if test="reqVO.custName != null and reqVO.custName!=''">
+                cust_name LIKE CONCAT('%',#{reqVO.custName},'%') AND
+            </if>
+            <if test="reqVO.skuCode != null and reqVO.skuCode!=''">
+                sku_code = #{reqVO.skuCode} AND
+            </if>
+            <if test="reqVO.skuName != null and reqVO.skuName!=''">
+                sku_name LIKE CONCAT('%',#{reqVO.skuName},'%') AND
+            </if>
+            <if test="reqVO.cskuCode != null and reqVO.cskuCode!=''">
+                csku_code LIKE CONCAT('%',#{reqVO.cskuCode},'%') AND
+            </if>
+            <if test="reqVO.custPo != null and reqVO.custPo!=''">
+                cust_po LIKE CONCAT('%',#{reqVO.custPo},'%') AND
+            </if>
+            <if test="reqVO.ownBrandFlag != null">
+                own_brand_flag = #{reqVO.ownBrandFlag} AND
+            </if>
+            <if test="reqVO.custProFlag != null">
+                cust_pro_flag = #{reqVO.custProFlag} AND
+            </if>
+            <if test="reqVO.companyName != null and reqVO.companyName!=''">
+                company_name LIKE CONCAT('%',#{reqVO.companyName},'%') AND
+            </if>
+        </trim>
+        ORDER BY id DESC
+    </select>
+
+    <select id="getStock" resultType="com.syj.eplus.module.wms.controller.admin.stock.vo.StockRespVO">
+        <include refid="queryStock"/> where sku_id = #{skuId} and deleted = 0
+    </select>
+
+</mapper>

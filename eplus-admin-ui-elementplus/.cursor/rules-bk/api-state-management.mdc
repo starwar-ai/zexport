@@ -1,0 +1,463 @@
+---
+alwaysApply: true
+---
+
+# API 接口和状态管理规范
+
+## API 接口规范
+
+### API 文件结构
+
+```typescript
+// api/user.ts
+import request from '@/utils/request'
+import type { UserInfo, CreateUserRequest } from '@/types/user'
+
+export const userApi = {
+  // 获取用户列表
+  getUserList: (params: GetUserListParams): Promise<ApiResponse<UserInfo[]>> => {
+    return request.get('/admin-api/system/user/page', { params })
+  },
+
+  // 创建用户
+  createUser: (data: CreateUserRequest): Promise<ApiResponse<UserInfo>> => {
+    return request.post('/admin-api/system/user/create', data)
+  },
+
+  // 更新用户
+  updateUser: (id: number, data: UpdateUserRequest): Promise<ApiResponse<void>> => {
+    return request.put(`/admin-api/system/user/update?id=${id}`, data)
+  },
+
+  // 删除用户
+  deleteUser: (id: number): Promise<ApiResponse<void>> => {
+    return request.delete(`/admin-api/system/user/delete?id=${id}`)
+  }
+}
+```
+
+### API 类型定义
+
+```typescript
+// types/api.ts
+export interface ApiResponse<T = any> {
+  code: number
+  data: T
+  message: string
+}
+
+export interface PageParams {
+  pageNo: number
+  pageSize: number
+}
+
+export interface PageResult<T> {
+  list: T[]
+  total: number
+}
+
+export interface ApiResponse<T> {
+  code: number
+  data: T
+  message: string
+}
+```
+
+## 状态管理规范 (Pinia)
+
+### Store 结构
+
+```typescript
+// store/user.ts
+import { defineStore } from 'pinia'
+import { userApi } from '@/api/user'
+import type { UserInfo } from '@/types/user'
+
+export const useUserStore = defineStore('user', () => {
+  // 状态
+  const userInfo = ref<UserInfo | null>(null)
+  const token = ref<string>('')
+  const permissions = ref<string[]>([])
+
+  // 计算属性
+  const isLoggedIn = computed(() => !!token.value)
+  const hasPermission = computed(
+    () => (permission: string) => permissions.value.includes(permission)
+  )
+
+  // 方法
+  const login = async (username: string, password: string) => {
+    try {
+      const response = await userApi.login({ username, password })
+      token.value = response.data.token
+      userInfo.value = response.data.userInfo
+      permissions.value = response.data.permissions
+    } catch (error) {
+      console.error('登录失败:', error)
+      throw error
+    }
+  }
+
+  const logout = () => {
+    token.value = ''
+    userInfo.value = null
+    permissions.value = []
+  }
+
+  return {
+    userInfo,
+    token,
+    permissions,
+    isLoggedIn,
+    hasPermission,
+    login,
+    logout
+  }
+})
+```
+
+### Store 使用规范
+
+```typescript
+// 在组件中使用
+<script setup lang="ts">
+import { useUserStore } from '@/store/user'
+
+const userStore = useUserStore()
+
+// 使用状态
+const userInfo = computed(() => userStore.userInfo)
+const isLoggedIn = computed(() => userStore.isLoggedIn)
+
+// 调用方法
+const handleLogin = async () => {
+  try {
+    await userStore.login(username, password)
+    // 登录成功处理
+  } catch (error) {
+    // 错误处理
+  }
+}
+</script>
+```
+
+## 错误处理规范
+
+### 统一错误处理
+
+```typescript
+// utils/error.ts
+import { ElMessage } from 'element-plus'
+
+export class ApiError extends Error {
+  constructor(
+    public code: number,
+    message: string,
+    public data?: any
+  ) {
+    super(message)
+    this.name = 'ApiError'
+  }
+}
+
+export function handleApiError(error: any): void {
+  if (error instanceof ApiError) {
+    ElMessage.error(error.message)
+  } else {
+    ElMessage.error('系统错误，请稍后重试')
+    console.error('API Error:', error)
+  }
+}
+```
+
+### 请求拦截器
+
+```typescript
+// utils/request.ts
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/store/user'
+
+const request = axios.create({
+  baseURL: import.meta.env.VITE_BASE_URL,
+  timeout: 10000
+})
+
+// 请求拦截器
+request.interceptors.request.use(
+  (config) => {
+    const userStore = useUserStore()
+    if (userStore.token) {
+      config.headers.Authorization = `Bearer ${userStore.token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+// 响应拦截器
+request.interceptors.response.use(
+  (response) => {
+    const { code, message, data } = response.data
+
+    if (code === 0) {
+      return response.data
+    } else {
+      ElMessage.error(message || '请求失败')
+      return Promise.reject(new ApiError(code, message, data))
+    }
+  },
+  (error) => {
+    if (error.response?.status === 401) {
+      const userStore = useUserStore()
+      userStore.logout()
+      // 跳转到登录页
+    }
+    ElMessage.error(error.message || '网络错误')
+    return Promise.reject(error)
+  }
+)
+
+export default request
+```
+
+## 最佳实践
+
+1. **API 接口统一管理** - 按模块组织 API 文件
+2. **类型安全** - 为所有 API 响应定义类型
+3. **错误处理** - 统一错误处理机制
+4. **状态管理** - 使用 Pinia 进行状态管理
+5. **请求拦截** - 统一处理认证和错误
+6. **响应拦截** - 统一处理响应数据格式
+
+# API 接口和状态管理规范
+
+## API 接口规范
+
+### API 文件结构
+
+```typescript
+// api/user.ts
+import request from '@/utils/request'
+import type { UserInfo, CreateUserRequest } from '@/types/user'
+
+export const userApi = {
+  // 获取用户列表
+  getUserList: (params: GetUserListParams): Promise<ApiResponse<UserInfo[]>> => {
+    return request.get('/admin-api/system/user/page', { params })
+  },
+
+  // 创建用户
+  createUser: (data: CreateUserRequest): Promise<ApiResponse<UserInfo>> => {
+    return request.post('/admin-api/system/user/create', data)
+  },
+
+  // 更新用户
+  updateUser: (id: number, data: UpdateUserRequest): Promise<ApiResponse<void>> => {
+    return request.put(`/admin-api/system/user/update?id=${id}`, data)
+  },
+
+  // 删除用户
+  deleteUser: (id: number): Promise<ApiResponse<void>> => {
+    return request.delete(`/admin-api/system/user/delete?id=${id}`)
+  }
+}
+```
+
+### API 类型定义
+
+```typescript
+// types/api.ts
+export interface ApiResponse<T = any> {
+  code: number
+  data: T
+  message: string
+}
+
+export interface PageParams {
+  pageNo: number
+  pageSize: number
+}
+
+export interface PageResult<T> {
+  list: T[]
+  total: number
+}
+
+export interface ApiResponse<T> {
+  code: number
+  data: T
+  message: string
+}
+```
+
+## 状态管理规范 (Pinia)
+
+### Store 结构
+
+```typescript
+// store/user.ts
+import { defineStore } from 'pinia'
+import { userApi } from '@/api/user'
+import type { UserInfo } from '@/types/user'
+
+export const useUserStore = defineStore('user', () => {
+  // 状态
+  const userInfo = ref<UserInfo | null>(null)
+  const token = ref<string>('')
+  const permissions = ref<string[]>([])
+
+  // 计算属性
+  const isLoggedIn = computed(() => !!token.value)
+  const hasPermission = computed(
+    () => (permission: string) => permissions.value.includes(permission)
+  )
+
+  // 方法
+  const login = async (username: string, password: string) => {
+    try {
+      const response = await userApi.login({ username, password })
+      token.value = response.data.token
+      userInfo.value = response.data.userInfo
+      permissions.value = response.data.permissions
+    } catch (error) {
+      console.error('登录失败:', error)
+      throw error
+    }
+  }
+
+  const logout = () => {
+    token.value = ''
+    userInfo.value = null
+    permissions.value = []
+  }
+
+  return {
+    userInfo,
+    token,
+    permissions,
+    isLoggedIn,
+    hasPermission,
+    login,
+    logout
+  }
+})
+```
+
+### Store 使用规范
+
+```typescript
+// 在组件中使用
+<script setup lang="ts">
+import { useUserStore } from '@/store/user'
+
+const userStore = useUserStore()
+
+// 使用状态
+const userInfo = computed(() => userStore.userInfo)
+const isLoggedIn = computed(() => userStore.isLoggedIn)
+
+// 调用方法
+const handleLogin = async () => {
+  try {
+    await userStore.login(username, password)
+    // 登录成功处理
+  } catch (error) {
+    // 错误处理
+  }
+}
+</script>
+```
+
+## 错误处理规范
+
+### 统一错误处理
+
+```typescript
+// utils/error.ts
+import { ElMessage } from 'element-plus'
+
+export class ApiError extends Error {
+  constructor(
+    public code: number,
+    message: string,
+    public data?: any
+  ) {
+    super(message)
+    this.name = 'ApiError'
+  }
+}
+
+export function handleApiError(error: any): void {
+  if (error instanceof ApiError) {
+    ElMessage.error(error.message)
+  } else {
+    ElMessage.error('系统错误，请稍后重试')
+    console.error('API Error:', error)
+  }
+}
+```
+
+### 请求拦截器
+
+```typescript
+// utils/request.ts
+import axios from 'axios'
+import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/store/user'
+
+const request = axios.create({
+  baseURL: import.meta.env.VITE_BASE_URL,
+  timeout: 10000
+})
+
+// 请求拦截器
+request.interceptors.request.use(
+  (config) => {
+    const userStore = useUserStore()
+    if (userStore.token) {
+      config.headers.Authorization = `Bearer ${userStore.token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
+// 响应拦截器
+request.interceptors.response.use(
+  (response) => {
+    const { code, message, data } = response.data
+
+    if (code === 0) {
+      return response.data
+    } else {
+      ElMessage.error(message || '请求失败')
+      return Promise.reject(new ApiError(code, message, data))
+    }
+  },
+  (error) => {
+    if (error.response?.status === 401) {
+      const userStore = useUserStore()
+      userStore.logout()
+      // 跳转到登录页
+    }
+    ElMessage.error(error.message || '网络错误')
+    return Promise.reject(error)
+  }
+)
+
+export default request
+```
+
+## 最佳实践
+
+1. **API 接口统一管理** - 按模块组织 API 文件
+2. **类型安全** - 为所有 API 响应定义类型
+3. **错误处理** - 统一错误处理机制
+4. **状态管理** - 使用 Pinia 进行状态管理
+5. **请求拦截** - 统一处理认证和错误
+6. **响应拦截** - 统一处理响应数据格式

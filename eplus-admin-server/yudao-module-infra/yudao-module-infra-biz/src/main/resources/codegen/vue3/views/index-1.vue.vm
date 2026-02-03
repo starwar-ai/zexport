@@ -1,0 +1,292 @@
+<template>
+  <eplus-list
+      :eplusSearchSchema="eplusSearchSchema"
+      :eplusTableSchema="eplusTableSchema"
+      ref="eplusListRef"
+  >
+    <template #tableActions>
+      <el-button
+          type="primary"
+          plain
+          @click="handleCreate()"
+          v-hasPermi="['${permissionPrefix}:create']"
+      >
+        <Icon
+            icon="ep:plus"
+            class="mr-5px"
+        />
+        新增${table.classComment}
+      </el-button>
+      <el-button
+          type="success"
+          plain
+          @click="handleExport()"
+          v-hasPermi="['${permissionPrefix}:export']"
+      >
+        <Icon
+            icon="ep:download"
+            class="mr-5px"
+        />
+        导出
+      </el-button>
+    </template>
+  </eplus-list>
+
+  <eplus-dialog
+      ref="eplusDialogRef"
+      @success="handleRefresh"
+      @failure="handleDialogFailure"
+      :destroyOnClose="true"
+  >
+    <template #detail="{ key }"> <${simpleClassName}Detail :id="key" /></template>
+
+    <template #edit="{ key }">
+      <${simpleClassName}Form
+          :id="key"
+          mode="edit"
+          @handleSuccess="handleRefresh"
+      />
+    </template>
+
+    <template #create>
+      <${simpleClassName}Form
+          mode="create"
+          @handleSuccess="handleRefresh"
+      />
+    </template>
+  </eplus-dialog>
+</template>
+
+<script setup lang="tsx">
+#foreach ($column in $columns)
+    #if ("" != $dictType)
+    import {DICT_TYPE, getDictLabel} from '@/utils/dict'
+    import {EplusDialog} from '@/components/EplusDialog'
+    import {formatDateColumn, formatDictColumn} from '@/utils/table'
+    import * as ${simpleClassName}Api from '@/api/'
+    import {EplusSearchSchema} from '@/components/EplusSearch/types'
+    import {EplusTableSchema} from '@/types/eplus'
+    import {EplusSearchMultiDatePicker} from '@/components/EplusSearch'
+        #break
+#end
+#end
+
+  const name = '${simpleClassName}'
+
+  const eplusDialogRef = ref<InstanceType<typeof EplusDialog> | undefined>(undefined)
+
+  const message = useMessage()
+
+  const eplusListRef = ref()
+  defineOptions({
+    name
+  })
+
+  const handleDialogSuccess = () => {}
+
+  const handleDialogFailure = () => {}
+
+  const eplusSearchSchema: EplusSearchSchema = {
+    fields: [
+#foreach ($column in $columns)
+#if ($column.listOperation)
+#set ($dictType = $column.dictType)
+#set ($javaField = $column.javaField)
+#set ($javaType = $column.javaType)
+#set ($AttrName = $column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+#set ($comment = $column.columnComment)
+#set ($dictMethod = "getDictOptions")## 计算使用哪个 dict 字典方法
+#if ($javaType == "Integer" || $javaType == "Long" || $javaType == "Byte" || $javaType == "Short")
+#set ($dictMethod = "getIntDictOptions")
+#elseif ($javaType == "String")
+#set ($dictMethod = "getStrDictOptions")
+#elseif ($javaType == "Boolean")
+#set ($dictMethod = "getBoolDictOptions")
+#end
+#if("" != $dictType)
+       {
+         component: (<eplus-dict-select dictType={DICT_TYPE.$dictType.toUpperCase()}></eplus-dict-select>),
+         name: '${javaField}',
+         label: '${comment}',
+         formatter: (args: any[]) => {
+              return getDictLabel(DICT_TYPE.$dictType.toUpperCase(), args[0])
+         }
+       },
+#else
+       {
+         component: <el-input clearable></el-input>,
+         name: '${javaField}',
+         label: '${comment}'
+       },
+#end
+#end
+#end
+      {
+        component: <EplusSearchMultiDatePicker />,
+        subfields: [
+          {
+            name: 'createTime',
+            label: '创建日期',
+            formatter: '从{0}到{1}'
+          }
+        ]
+      }
+    ],
+    moreFields: []
+  }
+
+  const eplusTableSchema: EplusTableSchema = {
+    getListApi: async (ps) => {
+      const res = await ${simpleClassName}Api.get${simpleClassName}Page(ps)
+      return {
+        list: res.list,
+        total: res.total
+      }
+    },
+    delListApi: async (id) => {
+      await ${simpleClassName}Api.delete${simpleClassName}(id)
+    },
+    exportListApi: async (ps) => {
+      return await ${simpleClassName}Api.export${simpleClassName}(ps)
+    },
+    columns: [
+#foreach ($column in $columns)
+#if ($column.listOperationResult)
+#set ($dictType = $column.dictType)
+#set ($javaField = $column.javaField)
+#set ($javaType = $column.javaType)
+#set ($AttrName = $column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+#set ($comment = $column.columnComment)
+#set ($dictMethod = "getDictOptions")## 计算使用哪个 dict 字典方法
+#if ($javaType == "Integer" || $javaType == "Long" || $javaType == "Byte" || $javaType == "Short")
+#set ($dictMethod = "getIntDictOptions")
+#elseif ($javaType == "String")
+#set ($dictMethod = "getStrDictOptions")
+#elseif ($javaType == "Boolean")
+#set ($dictMethod = "getBoolDictOptions")
+#end
+#if("" != $dictType)
+  {
+    field: '${javaField}',
+    label: '${comment}',
+    minWidth: '120px',
+    formatter: formatDictColumn(DICT_TYPE.$dictType.toUpperCase())
+  },
+#elseif($javaField == "createTime")
+  {
+    field: 'createTime',
+    label: '创建时间',
+    formatter: formatDateColumn(),
+    width: '120px'
+  },
+#else
+  {
+    field: '${javaField}',
+    label: '${comment}',
+    minWidth: '120px',
+  },
+#end
+#if(${column.requireName})
+  {
+    field: '${column.javaNameField}',
+    label: '${column.columnComment.substring(0, $column.columnComment.length() - 2)}名称',
+    minWidth: '120px'
+  },
+#end
+#end
+#end
+      {
+        field: 'action',
+        label: '操作',
+        width: '120px',
+        fixed: 'right',
+        slots: {
+          default: (data) => {
+            const { row } = data
+            return (
+                <div class="flex items-center justify-between">
+                  <el-button
+                      link
+                      type="success"
+                      onClick={() => {
+                        handleDetail(row.id)
+                      }}
+                      hasPermi="['${permissionPrefix}:detail']"
+                  >
+                    详情
+                  </el-button>
+                  <eplus-dropdown
+#foreach ($column in $columns)
+#if($table.auditFlag)
+
+                      submitItem={{
+                        permi: '${permissionPrefix}:submit',
+                        handler: async (row) => {
+                          await handleSubmit(row)
+                        }
+                      }}
+#end
+#break
+#end
+                      editItem={{
+                        permi: '${permissionPrefix}:update',
+                        handler: () => {
+                          handleUpdate(row.id)
+                        }
+                      }}
+                      deleteItem={{
+                        permi: '${permissionPrefix}:delete',
+                        handler: async (row) => {
+                          await handleDelete(row.id)
+                        }
+                      }}
+                      otherItems={[]}
+                      auditable={row}
+                  ></eplus-dropdown>
+                </div>
+            )
+          }
+        }
+      }
+    ]
+  }
+
+  const handleExport = async () => {
+    return await eplusListRef.value.exportList('${table.classComment}列表.xlsx')
+  }
+
+  const handleSubmit = async (data) => {
+    // 提交请求
+    let res = await ${simpleClassName}Api.submit${simpleClassName}(data.id)
+    if (res) {
+      message.success('已提交审核！')
+    }
+    await eplusListRef.value.refresh()
+  }
+
+  // 删除按钮操作
+  const handleDelete = async (id: number) => {
+    await eplusListRef.value.delList(id, false)
+  }
+
+  const handleUpdate = (id: number) => {
+    eplusDialogRef.value?.openEdit(id, '${table.classComment}')
+  }
+  /// 打开详情
+  const handleDetail = (id: number) => {
+    eplusDialogRef.value?.openDetail(id)
+  }
+  const handleCreate = () => {
+    eplusDialogRef.value?.openCreate('${table.classComment}')
+  }
+
+  const handleRefresh = async () => {
+    await eplusListRef.value.refresh()
+  }
+
+  onMounted(() => {})
+
+  onActivated(() => {
+    eplusDialogRef.value?.close()
+  })
+</script>
