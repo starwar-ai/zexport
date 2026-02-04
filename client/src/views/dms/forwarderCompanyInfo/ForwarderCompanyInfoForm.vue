@@ -142,7 +142,7 @@ const getCompanyName = (item) => {
   form.companyName = item.name
 }
 
-const open = async (type, obj? = {}) => {
+const open = async (type, obj = {}) => {
   diaType.value = type
   if (type !== 'add') {
     form = obj

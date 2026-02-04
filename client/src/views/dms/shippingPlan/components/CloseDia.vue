@@ -62,7 +62,7 @@ let form = reactive({
   remark: ''
 })
 
-const open = async (obj? = {}) => {
+const open = async (obj = {}) => {
   console.log(obj)
   form.parentId = obj.parentId || undefined
   form.itemId = obj.itemId || undefined

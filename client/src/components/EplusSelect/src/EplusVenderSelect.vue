@@ -79,7 +79,7 @@ const onChangeEmit = (val) => {
   emit('changeEmit', val, list.value)
 }
 
-const getList = async (val? = '', isInit) => {
+const getList = async (val = '', isInit) => {
   let params = {
     pageSize: 100,
     pageNo: 1,

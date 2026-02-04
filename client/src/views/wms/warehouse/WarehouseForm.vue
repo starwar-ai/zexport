@@ -115,7 +115,7 @@ let form = reactive({
   venderFlag: 0
 })
 
-const open = async (type, obj? = {}) => {
+const open = async (type, obj = {}) => {
   diaType.value = type
   if (type !== 'add') {
     form = obj

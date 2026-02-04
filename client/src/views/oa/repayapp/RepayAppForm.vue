@@ -118,7 +118,7 @@ const loadAppInfo = reactive({
 })
 provide('formData', formData)
 
-const loanAppIdChange = (data, type? = 1) => {
+const loanAppIdChange = (data, type = 1) => {
   loadAppInfo.companyName = data.companyName
   if (type == 2) {
     formData.loanAppId = data.loanAppId
