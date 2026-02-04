@@ -231,6 +231,11 @@ public interface PurchaseContractConvert {
             return;
         }
 
+        // 跟单员姓名
+        if (purchaseContractRespVO.getManager() != null) {
+            purchaseContractRespVO.setManagerNickName(purchaseContractRespVO.getManager().getNickname());
+        }
+
         // 预付金额拆分
         if (purchaseContractRespVO.getPrepayAmount() != null) {
             purchaseContractRespVO.setPrepayAmountAmount(NumberFormatUtil.formatAmount(purchaseContractRespVO.getPrepayAmount().getAmount()));

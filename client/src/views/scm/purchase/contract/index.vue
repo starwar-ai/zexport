@@ -389,6 +389,15 @@ const eplusSearchSchema: EplusSearchSchema = {
       }
     },
     {
+      component: <eplus-user-select></eplus-user-select>,
+      name: 'managerId',
+      label: '跟单员',
+      formatter: async (args: any[]) => {
+        const user = await UserApi.getSimpleUser(args[0])
+        return user.nickname
+      }
+    },
+    {
       component: <EplusSearchMultiDatePicker />,
       subfields: [
         {
@@ -423,15 +432,6 @@ const eplusSearchSchema: EplusSearchSchema = {
     }
   ],
   moreFields: [
-    {
-      component: <eplus-user-select></eplus-user-select>,
-      name: 'managerId',
-      label: '跟单员',
-      formatter: async (args: any[]) => {
-        const user = await UserApi.getSimpleUser(args[0])
-        return user.nickname
-      }
-    },
     {
       component: <eplus-dict-select dictType={DICT_TYPE.CURRENCY_TYPE}></eplus-dict-select>,
       name: 'currency',
@@ -818,6 +818,14 @@ const eplusTableSchema: EplusTableSchema = {
           prop: 'purchaseUserDeptName',
           label: '采购员部门',
           minWidth: columnWidth.l
+        },
+        {
+          prop: 'managerNickName',
+          label: '跟单员',
+          minWidth: columnWidth.m,
+          formatter: (row) => {
+            return row.manager?.nickname
+          }
         },
         {
           prop: 'totalQuantity',
@@ -1370,6 +1378,11 @@ const eplusTableSchema: EplusTableSchema = {
         {
           prop: 'purchaseUserNickname',
           label: '采购员',
+          minWidth: columnWidth.m
+        },       
+         {
+          prop: 'managerNickname',
+          label: '跟单员',
           minWidth: columnWidth.m
         },
         {

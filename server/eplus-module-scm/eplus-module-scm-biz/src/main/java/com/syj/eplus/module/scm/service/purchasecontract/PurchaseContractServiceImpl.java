@@ -3312,11 +3312,6 @@ public class PurchaseContractServiceImpl extends ServiceImpl<PurchaseContractMap
             return result;
         }
         
-        // 处理优势产品条件，若无匹配数据则直接返回
-        if (!handleAdvantageFlag(pageReqVO)) {
-            return result;
-        }
-        
         // ===================== 第二阶段：分页查询明细数据 =====================
         Page<PurchaseContractProductModeRespVO> page = new Page<>(pageReqVO.getPageNo(), pageReqVO.getPageSize());
         IPage<PurchaseContractProductModeRespVO> pageResult = purchaseContractItemMapper.selectProductModePage(page, pageReqVO);

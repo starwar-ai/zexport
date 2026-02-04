@@ -138,8 +138,11 @@ public class PurchaseContractRespVO {
     @Schema(description = "跟单员", example = "24538")
     @ExcelProperty("跟单员")
     @CompareField
-    @ExcelIgnore
     private UserDept manager;
+
+    @Schema(description = "跟单员姓名")
+    @ExcelProperty("跟单员姓名")
+    private String managerNickName;
 
     @Schema(description = "采购员编码", example = "27774")
     @ExcelProperty("采购员编码")

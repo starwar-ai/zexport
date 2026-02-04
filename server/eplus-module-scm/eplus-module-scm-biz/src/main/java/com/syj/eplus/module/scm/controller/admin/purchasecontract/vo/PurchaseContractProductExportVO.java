@@ -33,6 +33,9 @@ public class PurchaseContractProductExportVO {
     @ExcelProperty("采购员")
     private String purchaseUserNickname;
 
+    @ExcelProperty("跟单员")
+    private String managerNickname;
+
     @ExcelProperty(value = "采购日期", converter = LocalDateOnlyConvert.class)
     private LocalDateTime createTime;
 

@@ -189,12 +189,9 @@
             <if test="req.withTaxPriceRmbMax != null">
                 AND JSON_EXTRACT(i.total_price_rmb, '$.amount') / NULLIF(i.quantity, 0) <![CDATA[<=]]> #{req.withTaxPriceRmbMax}
             </if>
-            <!-- 优势产品条件：使用预查询的 SKU ID 列表 -->
-            <if test="req.advantageSkuIds != null and req.advantageSkuIds.size() > 0">
-                AND i.sku_id IN
-                <foreach collection="req.advantageSkuIds" item="skuId" open="(" separator="," close=")">
-                    #{skuId}
-                </foreach>
+            <!-- 优势产品条件：直接通过 JOIN 的 pms_sku 表筛选 -->
+            <if test="req.advantageFlag != null">
+                AND s.advantage_flag = #{req.advantageFlag}
             </if>
             <!-- 主表条件 -->
             <if test="req.code != null and req.code != ''">
@@ -366,6 +363,7 @@
             JSON_UNQUOTE(JSON_EXTRACT(i.with_tax_price, '$.currency')) AS currency
         FROM scm_purchase_contract_item i
         LEFT JOIN scm_purchase_contract c ON i.purchase_contract_id = c.id
+        LEFT JOIN pms_sku s ON i.sku_code = s.code
         <where>
             c.deleted = 0 AND i.deleted = 0
             <!-- 辅助合同标志 -->
@@ -397,12 +395,9 @@
             <if test="req.withTaxPriceRmbMax != null">
                 AND JSON_EXTRACT(i.total_price_rmb, '$.amount') / NULLIF(i.quantity, 0) <![CDATA[<=]]> #{req.withTaxPriceRmbMax}
             </if>
-            <!-- 优势产品条件：使用预查询的 SKU ID 列表 -->
-            <if test="req.advantageSkuIds != null and req.advantageSkuIds.size() > 0">
-                AND i.sku_id IN
-                <foreach collection="req.advantageSkuIds" item="skuId" open="(" separator="," close=")">
-                    #{skuId}
-                </foreach>
+            <!-- 优势产品条件：直接通过 JOIN 的 pms_sku 表筛选 -->
+            <if test="req.advantageFlag != null">
+                AND s.advantage_flag = #{req.advantageFlag}
             </if>
             <!-- 主表条件 -->
             <if test="req.code != null and req.code != ''">
