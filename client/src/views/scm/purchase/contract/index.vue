@@ -740,7 +740,7 @@ const eplusTableSchema: EplusTableSchema = {
         // 产品维度列
         quantity: res?.summary?.qtySum,
         withTaxTotal: currencyJsonAnalysis(res?.summary?.totalSum),
-        withTaxPriceRmb: currencyJsonAnalysis(res?.summary?.totalAmountRmb),
+        totalPriceRmb: currencyJsonAnalysis(res?.summary?.totalPriceRmbSum),
         // 单据维度列
         totalQuantity: res?.summary?.qtySum,
         totalAmount: currencyJsonAnalysis(res?.summary?.totalSum),
@@ -760,6 +760,8 @@ const eplusTableSchema: EplusTableSchema = {
       queryMode
     })
   },
+  selection: true,
+  summary: true,
   showTabs: true,
   tabs: [
     {
@@ -1536,7 +1538,7 @@ const eplusTableSchema: EplusTableSchema = {
           }
         },
         {
-          prop: 'withTaxPriceRmb',
+          prop: 'totalPriceRmb',
           label: '采购金额（人民币）',
           minWidth: columnWidth.l,
           summary: true,
@@ -1549,11 +1551,11 @@ const eplusTableSchema: EplusTableSchema = {
             }
           },
           formatter: (row) => {
-            return row.withTaxPriceRmb?.amount ? (
+            return row.totalPriceRmb?.amount ? (
               <EplusMoneyLabel
                 val={{
-                  amount: row.withTaxPriceRmb.amount,
-                  currency: row.withTaxPriceRmb.currency
+                  amount: row.totalPriceRmb.amount,
+                  currency: row.totalPriceRmb.currency
                 }}
               />
             ) : (
