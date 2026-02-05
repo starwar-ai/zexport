@@ -13,6 +13,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.syj.eplus.module.sms.controller.admin.salecontract.vo.SaleContractPageReqVO;
 import com.syj.eplus.module.sms.controller.admin.salecontract.vo.SaleContractProductModeRespVO;
 import com.syj.eplus.module.sms.dal.dataobject.salecontract.SaleContractProductModeSummaryDO;
+import com.syj.eplus.module.sms.dal.dataobject.salecontract.SaleContractSummaryDO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -154,6 +155,18 @@ public interface SaleContractItemMapper extends BaseMapperX<SaleContractItem> {
      * @author 波波
      */
     SaleContractProductModeSummaryDO selectProductModeSummary(
+            @Param("req") SaleContractPageReqVO pageReqVO
+    );
+
+    /**
+     * 产品模式原币种金额汇总（按合同币种分组）
+     * 用于产品视图“销售总金额（原币种）”合计栏多币种展示
+     *
+     * @param pageReqVO 查询参数
+     * @return 按币种分组的金额汇总
+     * @author 波波
+     */
+    List<SaleContractSummaryDO> selectProductModeTotalAmountThisCurrencySummary(
             @Param("req") SaleContractPageReqVO pageReqVO
     );
 }

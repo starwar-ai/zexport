@@ -193,6 +193,7 @@ import { getSourceId, removeSourceId } from '@/utils/auth'
 import { currencyJsonAnalysis, formatNum } from '@/utils'
 import { EplusSkuName } from '@/components/EplusSkuName'
 import { checkPermi } from '@/utils/permission'
+import { EplusImgEnlarge } from '@/components/EplusTemplate'
 
 defineOptions({ name: 'SaleContractPage' })
 
@@ -240,7 +241,7 @@ const tabNameList = [
   { name: 'auto', label: '内部流通' }
 ]
 const handleDialogFailure = () => {}
-const confirmRow = ref({})
+const confirmRow = ref<any>({})
 const searchCountryName = ref()
 
 const handleRefresh = async () => {
@@ -265,6 +266,7 @@ const exportFileName = computed(() => {
 const saleType = contractType
 
 const message = useMessage()
+const getContractId = (row) => row?.contractId ?? row?.id
 
 const eplusSearchSchema: EplusSearchSchema = {
   fields: [
@@ -455,7 +457,7 @@ const handleClose = async (row) => {
       : contractType == 2
         ? DomesticSaleContractApi.close
         : FactorySaleContractApi.close
-  await req({ parentId: row.contractId })
+  await req({ parentId: getContractId(row) })
   message.success('作废成功')
   handleRefresh()
 }
@@ -466,14 +468,14 @@ const handleOrderDone = (row) => {
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    ExportSaleContractApi.orderDone([row.contractId]).then(() => {
+    ExportSaleContractApi.orderDone(getContractId(row)).then(() => {
       message.success('完成单据成功')
       handleRefresh()
     })
   })
 }
 
-const confirmChange = (row: Object) => {
+const confirmChange = (row: any) => {
   confirmRow.value = row
   // INSINGBACK.status 待回签
   // INPURCHASE.status 待采购
@@ -484,7 +486,7 @@ const confirmChange = (row: Object) => {
     SaleContractStatusEnum.INSHIPPING.status
   ].includes(row?.status)
 
-  eplusDialogRef.value?.openConfirm(row.contractId, '确认')
+  eplusDialogRef.value?.openConfirm(getContractId(row), '确认')
 }
 
 const backChange = (data) => {
@@ -512,9 +514,7 @@ const handleToPurchasePlan = async (id) => {
         message.error('存在变更中记录信息，请核对！')
         return
       }
-      let list = eplusListRef.value?.checkedItems.map((item) =>
-        item.parentId ? item.parentId : item.contractId
-      )
+      let list = eplusListRef.value?.checkedItems.map((item) => getContractId(item?.parent ?? item))
       res = await ExportSaleContractApi.batchToPurchasePlan({
         saleContractIdList: [...new Set(list)].join(',')
       })
@@ -533,7 +533,7 @@ const handleSignBack = async (row) => {
     return
   }
   let obj = {
-    id: row.contractId,
+    id: getContractId(row),
     code: row.code,
     createTime: row.createTime
   }
@@ -631,7 +631,7 @@ const changeDialogRef = ref('')
 const changeCount = ref(0)
 
 const eplusTableSchema: EplusTableSchema = {
-  getListApi: async (ps, currentTabIndex) => {
+  getListApi: async (ps) => {
     let status = ''
     let currentTab = tabNameList.filter((item) => item.name == activeName.value)
 
@@ -644,7 +644,7 @@ const eplusTableSchema: EplusTableSchema = {
     let confirmFlag = activeName.value == 'nine' ? 0 : ''
     let autoFlag = activeName.value == 'auto' ? 1 : 0
     // 根据当前 Tab 判断查询模式：产品 Tab (index=1) 使用产品模式 queryMode=2，其他使用单据模式 queryMode=1
-    const queryMode = currentTabIndex === 1 ? 2 : 1
+    const queryMode = ps?.currentTabIndex === 1 ? 2 : 1
     const params = {
       status: status,
       ...ps,
@@ -704,6 +704,8 @@ const eplusTableSchema: EplusTableSchema = {
             })
     return reqPath
   },
+  selection: true,
+  summary: true,
   showTabs: true,
   tabs: [
     {
@@ -948,7 +950,7 @@ const eplusTableSchema: EplusTableSchema = {
                       link
                       type="primary"
                       onClick={() => {
-                        handleDetail(row.contractId)
+                        handleDetail(getContractId(row))
                       }}
                       hasPermi="[`${permiPrefix}:detail`]"
                     >
@@ -962,7 +964,7 @@ const eplusTableSchema: EplusTableSchema = {
                           label: '变更',
                           permi: `${permiPrefix}:change`,
                           handler: async (row) => {
-                            handleChange(row.contractId, 'change')
+                            handleChange(getContractId(row), 'change')
                           }
                         }
                       ]}
@@ -977,7 +979,7 @@ const eplusTableSchema: EplusTableSchema = {
                       link
                       type="primary"
                       onClick={() => {
-                        handleDetail(row.contractId)
+                        handleDetail(getContractId(row))
                       }}
                       hasPermi="[`${permiPrefix}:detail`]"
                     >
@@ -988,13 +990,13 @@ const eplusTableSchema: EplusTableSchema = {
                       editItem={{
                         permi: `${permiPrefix}:update`,
                         handler: () => {
-                          handleUpdate(row.contractId)
+                          handleUpdate(getContractId(row))
                         }
                       }}
                       deleteItem={{
                         permi: `${permiPrefix}:delete`,
                         handler: async (row) => {
-                          await handleDelete(row.contractId)
+                          await handleDelete(getContractId(row))
                         }
                       }}
                       otherItems={[
@@ -1040,7 +1042,7 @@ const eplusTableSchema: EplusTableSchema = {
                           label: '变更',
                           permi: `${permiPrefix}:change`,
                           handler: async (row) => {
-                            handleChange(row.contractId, 'change')
+                            handleChange(getContractId(row), 'change')
                           }
                         },
                         {
@@ -1064,7 +1066,7 @@ const eplusTableSchema: EplusTableSchema = {
                           label: '下推采购计划',
                           permi: `${permiPrefix}:to-purchase-plan`,
                           handler: async (row) => {
-                            handleToPurchasePlan(row.contractId)
+                            handleToPurchasePlan(getContractId(row))
                           }
                         },
                         {
@@ -1111,7 +1113,7 @@ const eplusTableSchema: EplusTableSchema = {
                           permi: `${permiPrefix}:create`,
                           handler: async (row) => {
                             eplusDialogRef.value?.openCopy(
-                              row.contractId,
+                              getContractId(row),
                               contractType == 1
                                 ? '外销合同'
                                 : contractType == 2
@@ -1162,7 +1164,7 @@ const eplusTableSchema: EplusTableSchema = {
             default: (scope: any) => (
               <el-link
                 type="primary"
-                onClick={() => handleDetail(scope.row.contractId)}
+                onClick={() => handleDetail(getContractId(scope.row))}
               >
                 {scope.row.code}
               </el-link>
@@ -1352,7 +1354,7 @@ const eplusTableSchema: EplusTableSchema = {
         },
         {
           prop: 'totalSaleAmount',
-          label: '销售总金额',
+          label: '销售总金额（原币种）',
           minWidth: columnWidth.l,
           formatter: formatMoneyColumn(),
           summary: true,
@@ -1510,7 +1512,7 @@ const eplusTableSchema: EplusTableSchema = {
                       link
                       type="primary"
                       onClick={() => {
-                        handleDetail(row.contractId)
+                        handleDetail(getContractId(row))
                       }}
                       hasPermi="[`${permiPrefix}:detail`]"
                     >
@@ -1524,7 +1526,7 @@ const eplusTableSchema: EplusTableSchema = {
                           label: '变更',
                           permi: `${permiPrefix}:change`,
                           handler: async (row) => {
-                            handleChange(row.contractId, 'change')
+                            handleChange(getContractId(row), 'change')
                           }
                         }
                       ]}
@@ -1539,7 +1541,7 @@ const eplusTableSchema: EplusTableSchema = {
                       link
                       type="primary"
                       onClick={() => {
-                        handleDetail(row.contractId)
+                        handleDetail(getContractId(row))
                       }}
                       hasPermi="[`${permiPrefix}:detail`]"
                     >
@@ -1550,13 +1552,13 @@ const eplusTableSchema: EplusTableSchema = {
                       editItem={{
                         permi: `${permiPrefix}:update`,
                         handler: () => {
-                          handleUpdate(row.contractId)
+                          handleUpdate(getContractId(row))
                         }
                       }}
                       deleteItem={{
                         permi: `${permiPrefix}:delete`,
                         handler: async (row) => {
-                          await handleDelete(row.contractId)
+                          await handleDelete(getContractId(row))
                         }
                       }}
                       otherItems={[
@@ -1600,7 +1602,7 @@ const eplusTableSchema: EplusTableSchema = {
                           label: '变更',
                           permi: `${permiPrefix}:change`,
                           handler: async (row) => {
-                            handleChange(row.contractId, 'change')
+                            handleChange(getContractId(row), 'change')
                           }
                         },
                         {
@@ -1624,7 +1626,7 @@ const eplusTableSchema: EplusTableSchema = {
                           label: '下推采购计划',
                           permi: `${permiPrefix}:to-purchase-plan`,
                           handler: async (row) => {
-                            handleToPurchasePlan(row.contractId)
+                            handleToPurchasePlan(getContractId(row))
                           }
                         },
                         {
@@ -1671,7 +1673,7 @@ const eplusTableSchema: EplusTableSchema = {
                           permi: `${permiPrefix}:create`,
                           handler: async (row) => {
                             eplusDialogRef.value?.openCopy(
-                              row.contractId,
+                              getContractId(row),
                               contractType == 1
                                 ? '外销合同'
                                 : contractType == 2
@@ -1759,7 +1761,7 @@ const handleCreateShipmentPlan = async (row, queryMode) => {
       return
     }
 
-    const ids = []
+    const ids: number[] = []
     list.forEach((item) => {
       if (queryMode === QUERY_MODE.PRODUCT) {
         // 单据模式：从children中筛选可出运产品
@@ -1767,13 +1769,13 @@ const handleCreateShipmentPlan = async (row, queryMode) => {
           ?.filter(
             (obj) => (Number(obj.quantity) || 0) - (Number(obj.transferShippedQuantity) || 0) > 0
           )
-          .forEach((child) => ids.push(child.id))
+          .forEach((child) => ids.push(Number(child.id)))
       } else {
         // 产品模式：直接判断当前行
         const quantity = Number(item.quantity) || 0
         const transferShippedQuantity = Number(item.transferShippedQuantity) || 0
         if (quantity - transferShippedQuantity > 0) {
-          ids.push(item.id)
+          ids.push(Number(item.id))
         }
       }
     })
@@ -1815,7 +1817,7 @@ const handleCreateShipmentPlan = async (row, queryMode) => {
       let foreignTradeCompanyName = row.foreignTradeCompanyName
 
       if (!isValidArray(children)) {
-        const detail = await ExportSaleContractApi.getExportSaleContract({ id: row.contractId })
+        const detail = await ExportSaleContractApi.getExportSaleContract({ id: getContractId(row) })
         children = detail?.children
         foreignTradeCompanyId = detail?.foreignTradeCompanyId
         foreignTradeCompanyName = detail?.foreignTradeCompanyName
@@ -1867,18 +1869,18 @@ const handleSignBackBatch = () => {
       ElMessage.error('只能选择待回签状态的记录！')
       return
     } else {
-      var simpleData = []
+      const simpleData: any[] = []
       list.forEach((item) => {
         if (item.parent) {
           let obj = {
-            id: item.parent.contractId,
+            id: getContractId(item.parent),
             code: item.parent.code
           }
           simpleData.push(obj)
         } else {
           // 单据模式，直接使用 item 的主表 id
           let obj = {
-            id: item.contractId,
+            id: getContractId(item),
             code: item.code
           }
           simpleData.push(obj)

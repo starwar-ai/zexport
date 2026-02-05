@@ -101,8 +101,6 @@ const footerChange = (show: boolean) => {
   appStore.setFooter(show)
 }
 
-}
-
 // 固定菜单
 const fixedMenu = ref(appStore.getFixedMenu)
 

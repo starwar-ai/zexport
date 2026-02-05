@@ -131,7 +131,7 @@ export const close = async (data) => {
 }
 // 完成单据
 export const orderDone = async (data) => {
-  return await request.put({ url: `/sms/export/sale-contract/order-done?id= ${data}` })
+  return await request.put({ url: `/sms/export/sale-contract/order-done?id=${data}` })
 }
 //打印
 export const print = async (type, params) => {

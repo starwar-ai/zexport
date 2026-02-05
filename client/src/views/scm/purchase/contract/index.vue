@@ -274,7 +274,7 @@ const activeName = ref('all')
 const { push } = useRouter()
 const eplusDialogRef = ref<InstanceType<typeof EplusDialog> | undefined>(undefined)
 const signBackRef = ref()
-const confirmRow = ref({})
+const confirmRow = ref<any>({})
 const paymentListData = usePaymentStore()
 const handleTabsClick = (val) => {
   activeName.value = val.props.name
@@ -499,15 +499,13 @@ const exportFileName = ref('采购合同管理.xlsx')
 //   return await eplusListRef.value.exportList('采购合同管理.xlsx')
 // }
 
+const getContractId = (row) => row?.contractId ?? row?.id
+
 const batchPlaceOrder = async () => {
   let checkedData = eplusListRef.value?.checkedItems
   if (checkedData && checkedData?.length) {
     let contractIdList = checkedData.map((item) => {
-      if (item.parent) {
-        return item.parent.id
-      } else if (item.children) {
-        return item.id
-      }
+      return item?.contractId ?? item?.parentId ?? item?.parent?.id ?? item?.id
     })
     let ids = [...new Set(contractIdList)].join(',')
     await PurchaseContractApi.batchOrderPurchaseContract(ids)
@@ -525,11 +523,11 @@ const handleUpdate = (id: number, type?) => {
   eplusDialogRef.value?.openEdit(id, type === 'change' ? '变更' : '采购合同', type)
 }
 
-const confirmChange = (row: Object) => {
+const confirmChange = (row: any) => {
   confirmRow.value = row
   confirmRow.value.status = row.contractStatus
   confirmRow.value.changeType = [4, 5].includes(row?.contractStatus)
-  eplusDialogRef.value?.openConfirm(row.id, '确认变更')
+  eplusDialogRef.value?.openConfirm(getContractId(row), '确认变更')
 }
 
 // const handleSubmit = async (data) => {
@@ -602,7 +600,7 @@ const toPaymentApply = () => {
   let checkedData = eplusListRef.value?.checkedItems
   if (checkedData && checkedData?.length) {
     let contractIdList = checkedData.map((item) => {
-      return item.parentId || item.id
+      return item?.contractId ?? item?.parentId ?? item?.parent?.id ?? item?.id
     })
     ToPaymentApplyDialogRef.value.open(contractIdList)
   } else {
@@ -709,7 +707,7 @@ const btnSchemasFormat = (data) => {
 btnSchemasFormat(props.type)
 const handleSignBack = async (row, title = '回签') => {
   let obj = {
-    id: row.id,
+    id: getContractId(row),
     code: row.code,
     venderName: row.venderName,
     createTime: row.createTime
@@ -718,9 +716,9 @@ const handleSignBack = async (row, title = '回签') => {
 }
 const changeCount = ref(0)
 const eplusTableSchema: EplusTableSchema = {
-  getListApi: async (ps, currentTabIndex) => {
+  getListApi: async (ps) => {
     // 根据当前 Tab 判断查询模式：产品 Tab (index=1) 使用产品模式 queryMode=2
-    const queryMode = currentTabIndex === 1 ? 2 : 1
+    const queryMode = ps?.currentTabIndex === 1 ? 2 : 1
     
     const res = await PurchaseContractApi.getPurchaseContractPage({
       ...ps,
@@ -1884,12 +1882,13 @@ const eplusTableSchema: EplusTableSchema = {
   ]
 }
 const handleExchange = (row) => {
+  const contractId = getContractId(row)
   ElMessageBox.confirm('是否确认退换货？', '提示', {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    PurchaseContractApi.exchangePurchaseContract([row.id]).then(() => {
+    PurchaseContractApi.exchangePurchaseContract([contractId]).then(() => {
       message.success('退换货成功')
       handleRefresh()
     })
@@ -1912,12 +1911,13 @@ const handleProduced = (row) => {
 }
 
 const handleClose = (row) => {
+  const contractId = getContractId(row)
   ElMessageBox.confirm('是否确认作废？', '提示', {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    PurchaseContractApi.batchFinishPurchaseContract([row.id]).then(() => {
+    PurchaseContractApi.batchFinishPurchaseContract([contractId]).then(() => {
       message.success('作废成功')
       handleRefresh()
     })
@@ -1925,12 +1925,13 @@ const handleClose = (row) => {
 }
 
 const handleDone = (row) => {
+  const contractId = getContractId(row)
   ElMessageBox.confirm('是否确认完成单据？', '提示', {
     confirmButtonText: '确认',
     cancelButtonText: '取消',
     type: 'warning'
   }).then(() => {
-    PurchaseContractApi.orderDonePurchaseContract([row.id]).then(() => {
+    PurchaseContractApi.orderDonePurchaseContract(contractId).then(() => {
       message.success('完成单据成功')
       handleRefresh()
     })
@@ -1938,14 +1939,14 @@ const handleDone = (row) => {
 }
 
 const handlePrint = async (row) => {
-  const url = await PurchaseContractApi.print({ id: row?.id, reportCode: 'purchase-contract' })
+  const url = await PurchaseContractApi.print({ id: getContractId(row), reportCode: 'purchase-contract' })
   openPdf(url)
 }
 
 const handleExport = async (row) => {
   await message.exportConfirm()
   const data = await PurchaseContractApi.exportPurchaseContractDetailWord({
-    id: row?.id,
+    id: getContractId(row),
     reportCode: 'purchase-contract'
   })
   if (data && data.size) {

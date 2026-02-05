@@ -2849,18 +2849,16 @@ public class SaleContractServiceImpl extends ServiceImpl<SaleContractMapper, Sal
             usdAmount.put("amount", summaryDO.getSumTotalSaleAmountUsd());
             totalAmountUsdList.add(usdAmount);
             summary.put("sumTotalAmountUsd", totalAmountUsdList);
-            // 原币种汇总（产品模式下可能有多种币种，这里简化处理为单一币种）
-            List<Map<String, Object>> totalAmountThisCurrencyList = new ArrayList<>();
-            Map<String, Object> thisCurrencyAmount = new HashMap<>();
-            thisCurrencyAmount.put("currency", "USD");
-            thisCurrencyAmount.put("amount", summaryDO.getSumTotalSaleAmount());
-            totalAmountThisCurrencyList.add(thisCurrencyAmount);
-            summary.put("sumTotalAmountThisCurrency", totalAmountThisCurrencyList);
             summary.put("sumRealPurchaseQuantity", summaryDO.getSumRealPurchaseQuantity());
             summary.put("sumRealLockQuantity", summaryDO.getSumRealLockQuantity());
             summary.put("sumShippedQuantity", summaryDO.getSumShippedQuantity());
             summary.put("sumTransferShippedQuantity", summaryDO.getSumTransferShippedQuantity());
         }
+
+        // 原币种汇总（产品模式下可能存在多币种）：按合同币种分组汇总，保持与单据模式一致
+        List<SaleContractSummaryDO> totalAmountThisCurrencySummary =
+                saleContractItemMapper.selectProductModeTotalAmountThisCurrencySummary(pageReqVO);
+        convertSummaryToJsonAmountList(totalAmountThisCurrencySummary, "sumTotalAmountThisCurrency", summary);
     }
 
     /**

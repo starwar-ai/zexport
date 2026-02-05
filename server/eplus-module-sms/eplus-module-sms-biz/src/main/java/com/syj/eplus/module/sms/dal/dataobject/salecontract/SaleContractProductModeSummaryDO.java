@@ -36,11 +36,6 @@ public class SaleContractProductModeSummaryDO {
     private BigDecimal sumTotalSaleAmountUsd;
 
     /**
-     * 外销总金额原币种合计
-     */
-    private BigDecimal sumTotalSaleAmount;
-
-    /**
      * 采购数量合计
      */
     private Long sumRealPurchaseQuantity;

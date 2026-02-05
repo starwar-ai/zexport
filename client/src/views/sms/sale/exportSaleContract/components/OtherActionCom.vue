@@ -72,6 +72,7 @@ const handleRefresh = () => {
   emit('success')
 }
 const type = ref(1)
+const getContractId = (row) => row?.contractId ?? row?.id
 
 const handleUpdate = (id: number, contractType = 1) => {
   type.value = contractType
@@ -111,7 +112,7 @@ const confirmChange = (row, contractType) => {
   // INSINGBACK.status 待回签
   // INPURCHASE.status 待采购
   // INSHIPPING.status 待出运
-  eplusDialogRef.value?.openConfirm(row.id, '确认')
+  eplusDialogRef.value?.openConfirm(getContractId(row), '确认')
 }
 const backChange = (data) => {
   handleChange(data.id, type.value)
