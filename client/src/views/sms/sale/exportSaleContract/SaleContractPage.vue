@@ -631,7 +631,8 @@ const changeDialogRef = ref('')
 const changeCount = ref(0)
 
 const eplusTableSchema: EplusTableSchema = {
-  getListApi: async (ps) => {
+  getListApi: async (...args: any[]) => {
+    const [ps, currentTabIndex] = args
     let status = ''
     let currentTab = tabNameList.filter((item) => item.name == activeName.value)
 
@@ -644,7 +645,8 @@ const eplusTableSchema: EplusTableSchema = {
     let confirmFlag = activeName.value == 'nine' ? 0 : ''
     let autoFlag = activeName.value == 'auto' ? 1 : 0
     // 根据当前 Tab 判断查询模式：产品 Tab (index=1) 使用产品模式 queryMode=2，其他使用单据模式 queryMode=1
-    const queryMode = ps?.currentTabIndex === 1 ? 2 : 1
+    const tabIndex = currentTabIndex ?? ps?.currentTabIndex
+    const queryMode = tabIndex === 1 ? 2 : 1
     const params = {
       status: status,
       ...ps,

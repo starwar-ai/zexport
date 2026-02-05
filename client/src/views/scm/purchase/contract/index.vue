@@ -716,9 +716,11 @@ const handleSignBack = async (row, title = '回签') => {
 }
 const changeCount = ref(0)
 const eplusTableSchema: EplusTableSchema = {
-  getListApi: async (ps) => {
+  getListApi: async (...args: any[]) => {
+    const [ps, currentTabIndex] = args
     // 根据当前 Tab 判断查询模式：产品 Tab (index=1) 使用产品模式 queryMode=2
-    const queryMode = ps?.currentTabIndex === 1 ? 2 : 1
+    const tabIndex = currentTabIndex ?? ps?.currentTabIndex
+    const queryMode = tabIndex === 1 ? 2 : 1
     
     const res = await PurchaseContractApi.getPurchaseContractPage({
       ...ps,

@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(scanBasePackages = {"${yudao.info.base-package}.server",
         "${yudao.info.base-package}.module",
         "${eplus.info.base-package}.module"})
-public class dYudaoServerApplication {
+public class YudaoServerApplication {
 
     public static void main(String[] args) {
 
