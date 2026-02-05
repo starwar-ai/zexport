@@ -275,6 +275,9 @@ public class PurchaseContractPageReqVO extends PageParam {
     @Schema(description = "优势产品SKU ID列表（内部使用，由advantageFlag查询后设置）")
     private List<Long> advantageSkuIds;
 
+    @Schema(description = "优势产品SKU Code列表（内部使用，由advantageFlag查询后设置）")
+    private List<String> advantageSkuCodes;
+
     @Schema(description = "查询模式：1-单据模式(按合同分页)，2-产品模式(按明细分页)", example = "1")
     private Integer queryMode;
 }

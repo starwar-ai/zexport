@@ -119,6 +119,9 @@ public class SaleContractPageReqVO extends PageParam implements ExportContext.Ex
     @Schema(description = "优势产品SKU ID列表（内部使用，由 advantageFlag 查询填充）")
     private List<Long> advantageSkuIds;
 
+    @Schema(description = "优势产品SKU Code列表（内部使用，由 advantageFlag 查询填充）")
+    private List<String> advantageSkuCodes;
+
     @Schema(description = "客户来源")
     private Integer custSourceType;
 

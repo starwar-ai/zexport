@@ -341,11 +341,201 @@
             <if test="req.nameEng != null and req.nameEng != ''">
                 AND i.name_eng LIKE CONCAT('%', #{req.nameEng}, '%')
             </if>
-            <!-- 优势产品条件：使用预查询的 SKU ID 列表 -->
-            <if test="req.advantageSkuIds != null and req.advantageSkuIds.size() > 0">
-                AND i.sku_id IN
-                <foreach collection="req.advantageSkuIds" item="skuId" open="(" separator="," close=")">
-                    #{skuId}
+            <!-- 优势产品条件：使用预查询的 SKU Code 列表 -->
+            <if test="req.advantageSkuCodes != null and req.advantageSkuCodes.size() > 0">
+                AND i.sku_code IN
+                <foreach collection="req.advantageSkuCodes" item="skuCode" open="(" separator="," close=")">
+                    #{skuCode}
+                </foreach>
+            </if>
+            <!-- 主表条件 -->
+            <if test="req.code != null and req.code != ''">
+                AND c.code LIKE CONCAT('%', #{req.code}, '%')
+            </if>
+            <if test="req.companyId != null">
+                AND c.company_id = #{req.companyId}
+            </if>
+            <if test="req.custName != null and req.custName != ''">
+                AND c.cust_name LIKE CONCAT('%', #{req.custName}, '%')
+            </if>
+            <if test="req.custCode != null and req.custCode != ''">
+                AND c.cust_code LIKE CONCAT('%', #{req.custCode}, '%')
+            </if>
+            <if test="req.custPo != null and req.custPo != ''">
+                AND c.cust_po LIKE CONCAT('%', #{req.custPo}, '%')
+            </if>
+            <if test="req.custCountryId != null">
+                AND c.cust_country_id = #{req.custCountryId}
+            </if>
+            <if test="req.salesId != null">
+                AND JSON_EXTRACT(c.sales, '$.userId') = #{req.salesId}
+            </if>
+            <if test="req.salesDeptName != null and req.salesDeptName != ''">
+                AND JSON_EXTRACT(c.sales, '$.deptName') LIKE CONCAT('%', #{req.salesDeptName}, '%')
+            </if>
+            <if test="req.saleType != null">
+                AND c.sale_type = #{req.saleType}
+            </if>
+            <if test="req.auditStatus != null">
+                AND c.audit_status = #{req.auditStatus}
+            </if>
+            <if test="req.status != null">
+                AND c.status = #{req.status}
+            </if>
+            <if test="req.neStatus != null">
+                AND c.status != #{req.neStatus}
+            </if>
+            <if test="req.statusList != null and req.statusList.length > 0">
+                AND c.status IN
+                <foreach collection="req.statusList" item="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+            </if>
+            <if test="req.confirmFlag != null">
+                AND c.confirm_flag = #{req.confirmFlag}
+            </if>
+            <if test="req.autoFlag != null">
+                AND c.auto_flag = #{req.autoFlag}
+            </if>
+            <if test="req.createTime != null and req.createTime.length == 2">
+                AND c.create_time BETWEEN #{req.createTime[0]} AND #{req.createTime[1]}
+            </if>
+            <if test="req.signBackDate != null and req.signBackDate.length == 2">
+                AND c.sign_back_date BETWEEN #{req.signBackDate[0]} AND #{req.signBackDate[1]}
+            </if>
+            <if test="req.saleContractDate != null and req.saleContractDate.length == 2">
+                AND c.sale_contract_date BETWEEN #{req.saleContractDate[0]} AND #{req.saleContractDate[1]}
+            </if>
+            <if test="req.idList != null and req.idList.length > 0">
+                AND c.id IN
+                <foreach collection="req.idList" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="req.custSourceType != null">
+                AND c.cust_code IN (
+                    SELECT code FROM crm_cust WHERE deleted = 0 AND source_type = #{req.custSourceType}
+                )
+            </if>
+        </where>
+        ORDER BY c.id DESC, i.sort_num ASC
+    </select>
+
+    <!-- 产品模式列表查询（不分页，导出使用） -->
+    <select id="selectProductModeList" resultMap="SaleContractProductModeResultMap">
+        SELECT
+            <!-- 明细字段主键 -->
+            i.id AS id,
+            <!-- 主表字段 -->
+            c.id AS contractId,
+            c.code,
+            c.confirm_flag AS confirmFlag,
+            c.company_id AS companyId,
+            c.cust_id AS custId,
+            c.cust_code AS custCode,
+            c.cust_name AS custName,
+            c.currency,
+            c.settlement_term_type AS settlementTermType,
+            c.settlement_id AS settlementId,
+            c.settlement_name AS settlementName,
+            c.cust_country_id AS custCountryId,
+            c.cust_country_name AS custCountryName,
+            c.cust_po AS custPo,
+            c.agent_flag AS agentFlag,
+            c.sales,
+            NULLIF(JSON_UNQUOTE(JSON_EXTRACT(c.sales, '$.nickname')), 'null') AS salesNickname,
+            NULLIF(JSON_UNQUOTE(JSON_EXTRACT(c.sales, '$.deptName')), 'null') AS salesDeptName,
+            c.company_path AS companyPath,
+            c.input_date AS inputDate,
+            c.cust_delivery_date AS custDeliveryDate,
+            c.sale_type AS saleType,
+            c.creator,
+            c.create_time AS createTime,
+            c.audit_status AS auditStatus,
+            c.status,
+            c.sign_back_date AS signBackDate,
+            c.exchange_rate AS exchangeRate,
+            c.print_flag AS printFlag,
+            <!-- 明细字段 -->
+            i.sort_num AS sortNum,
+            i.sku_code AS skuCode,
+            i.basic_sku_code AS basicSkuCode,
+            i.csku_code AS cskuCode,
+            i.name,
+            i.name_eng AS nameEng,
+            i.main_picture AS mainPicture,
+            i.thumbnail,
+            i.quantity,
+            i.unit_price AS unitPrice,
+            i.total_sale_amount AS totalSaleAmount,
+            i.total_sale_amount_usd AS totalSaleAmountUsd,
+            i.purchase_unit_price AS purchaseUnitPrice,
+            i.real_purchase_with_tax_price AS realPurchaseWithTaxPrice,
+            i.purchase_with_tax_price AS purchaseWithTaxPrice,
+            i.purchase_total_price AS purchaseTotalPrice,
+            i.purchase_currency AS purchaseCurrency,
+            i.vender_name AS venderName,
+            i.vender_id AS venderId,
+            i.vender_code AS venderCode,
+            i.inventory_quantity AS inventoryQuantity,
+            i.current_lock_quantity AS currentLockQuantity,
+            i.real_lock_quantity AS realLockQuantity,
+            i.real_purchase_quantity AS realPurchaseQuantity,
+            i.need_pur_quantity AS needPurQuantity,
+            i.unit,
+            i.order_gross_profit AS orderGrossProfit,
+            i.order_gross_profit_rate AS orderGrossProfitRate,
+            i.vender_delivery_date AS venderDeliveryDate,
+            i.qty_per_outerbox AS qtyPerOuterbox,
+            i.qty_per_innerbox AS qtyPerInnerbox,
+            i.box_count AS boxCount,
+            i.volume,
+            i.reorder_flag AS reorderFlag,
+            i.hs_code AS hsCode,
+            i.package_type AS packageType,
+            i.tax_refund_rate AS taxRefundRate,
+            i.tax_refund_price AS taxRefundPrice,
+            i.status AS itemStatus,
+            i.purchase_user AS purchaseUser,
+            NULLIF(JSON_UNQUOTE(JSON_EXTRACT(i.purchase_user, '$.nickname')), 'null') AS purchaseUserNickname,
+            NULLIF(JSON_UNQUOTE(JSON_EXTRACT(i.purchase_user, '$.deptName')), 'null') AS purchaseUserDeptName,
+            i.sku_id AS skuId,
+            i.sku_type AS skuType,
+            i.own_brand_flag AS ownBrandFlag,
+            i.shipped_quantity AS shippedQuantity,
+            i.transfer_shipped_quantity AS transferShippedQuantity,
+            i.bill_status AS billStatus,
+            i.bill_quantity AS billQuantity,
+            i.manager,
+            NULLIF(JSON_UNQUOTE(JSON_EXTRACT(i.manager, '$.nickname')), 'null') AS managerNickname,
+            NULLIF(JSON_UNQUOTE(JSON_EXTRACT(i.manager, '$.deptName')), 'null') AS managerDeptName,
+            i.with_tax_price_remove_free AS withTaxPriceRemoveFree,
+            i.lock_msg AS lockMsg
+        FROM sms_sale_contract_item i
+        LEFT JOIN sms_sale_contract c ON i.contract_id = c.id
+        <where>
+            c.deleted = 0 AND i.deleted = 0
+            <!-- 明细条件 -->
+            <if test="req.basicSkuCode != null and req.basicSkuCode != ''">
+                AND i.basic_sku_code LIKE CONCAT('%', #{req.basicSkuCode}, '%')
+            </if>
+            <if test="req.cskuCode != null and req.cskuCode != ''">
+                AND i.csku_code LIKE CONCAT('%', #{req.cskuCode}, '%')
+            </if>
+            <if test="req.skuCode != null and req.skuCode != ''">
+                AND i.sku_code LIKE CONCAT('%', #{req.skuCode}, '%')
+            </if>
+            <if test="req.name != null and req.name != ''">
+                AND i.name LIKE CONCAT('%', #{req.name}, '%')
+            </if>
+            <if test="req.nameEng != null and req.nameEng != ''">
+                AND i.name_eng LIKE CONCAT('%', #{req.nameEng}, '%')
+            </if>
+            <!-- 优势产品条件：使用预查询的 SKU Code 列表 -->
+            <if test="req.advantageSkuCodes != null and req.advantageSkuCodes.size() > 0">
+                AND i.sku_code IN
+                <foreach collection="req.advantageSkuCodes" item="skuCode" open="(" separator="," close=")">
+                    #{skuCode}
                 </foreach>
             </if>
             <!-- 主表条件 -->
@@ -452,11 +642,11 @@
             <if test="req.nameEng != null and req.nameEng != ''">
                 AND i.name_eng LIKE CONCAT('%', #{req.nameEng}, '%')
             </if>
-            <!-- 优势产品条件：使用预查询的 SKU ID 列表 -->
-            <if test="req.advantageSkuIds != null and req.advantageSkuIds.size() > 0">
-                AND i.sku_id IN
-                <foreach collection="req.advantageSkuIds" item="skuId" open="(" separator="," close=")">
-                    #{skuId}
+            <!-- 优势产品条件：使用预查询的 SKU Code 列表 -->
+            <if test="req.advantageSkuCodes != null and req.advantageSkuCodes.size() > 0">
+                AND i.sku_code IN
+                <foreach collection="req.advantageSkuCodes" item="skuCode" open="(" separator="," close=")">
+                    #{skuCode}
                 </foreach>
             </if>
             <!-- 主表条件 -->
@@ -557,11 +747,11 @@
             <if test="req.nameEng != null and req.nameEng != ''">
                 AND i.name_eng LIKE CONCAT('%', #{req.nameEng}, '%')
             </if>
-            <!-- 优势产品条件：使用预查询的 SKU ID 列表 -->
-            <if test="req.advantageSkuIds != null and req.advantageSkuIds.size() > 0">
-                AND i.sku_id IN
-                <foreach collection="req.advantageSkuIds" item="skuId" open="(" separator="," close=")">
-                    #{skuId}
+            <!-- 优势产品条件：使用预查询的 SKU Code 列表 -->
+            <if test="req.advantageSkuCodes != null and req.advantageSkuCodes.size() > 0">
+                AND i.sku_code IN
+                <foreach collection="req.advantageSkuCodes" item="skuCode" open="(" separator="," close=")">
+                    #{skuCode}
                 </foreach>
             </if>
             <!-- 主表条件 -->

@@ -3095,7 +3095,7 @@ public class PurchaseContractServiceImpl extends ServiceImpl<PurchaseContractMap
             pageReqVO.setNeStatus(PurchaseContractStatusEnum.CASE_SETTLED.getCode());
         }
         Map<String, Object> summary = new HashMap<>();
-        //查询上单据变更数量
+        //查询上游单据变更数量
         Long count = purchaseContractMapper.selectCount(new LambdaQueryWrapperX<PurchaseContractDO>()
                 .eq(PurchaseContractDO::getConfirmFlag, BooleanEnum.NO.getValue())
                 .ne(PurchaseContractDO::getContractStatus, PurchaseContractStatusEnum.CASE_SETTLED.getCode())
@@ -3124,11 +3124,20 @@ public class PurchaseContractServiceImpl extends ServiceImpl<PurchaseContractMap
             if (CollUtil.isEmpty(advantageSkuIds)) {
                 return PageResult.empty();
             }
+            Map<Long, SkuDTO> skuDTOMap = skuApi.getSkuDTOMap(advantageSkuIds);
+            List<String> advantageSkuCodes = CollUtil.isEmpty(skuDTOMap) ? List.of() : skuDTOMap.values().stream()
+                    .map(SkuDTO::getCode)
+                    .filter(StrUtil::isNotEmpty)
+                    .distinct()
+                    .toList();
+            if (CollUtil.isEmpty(advantageSkuCodes)) {
+                return PageResult.empty();
+            }
             // 查询包含优势产品的采购合同ID
             List<Long> contractIds = purchaseContractItemMapper.selectList(
                 new LambdaQueryWrapperX<PurchaseContractItemDO>()
                     .select(PurchaseContractItemDO::getPurchaseContractId)
-                    .in(PurchaseContractItemDO::getSkuId, advantageSkuIds)
+                    .in(PurchaseContractItemDO::getSkuCode, advantageSkuCodes)
             ).stream().map(PurchaseContractItemDO::getPurchaseContractId).distinct().toList();
             
             if (CollUtil.isEmpty(contractIds)) {
@@ -3354,7 +3363,16 @@ public class PurchaseContractServiceImpl extends ServiceImpl<PurchaseContractMap
             if (CollUtil.isEmpty(advantageSkuIds)) {
                 return false;
             }
-            pageReqVO.setAdvantageSkuIds(advantageSkuIds);
+            Map<Long, SkuDTO> skuDTOMap = skuApi.getSkuDTOMap(advantageSkuIds);
+            List<String> advantageSkuCodes = CollUtil.isEmpty(skuDTOMap) ? List.of() : skuDTOMap.values().stream()
+                    .map(SkuDTO::getCode)
+                    .filter(StrUtil::isNotEmpty)
+                    .distinct()
+                    .toList();
+            if (CollUtil.isEmpty(advantageSkuCodes)) {
+                return false;
+            }
+            pageReqVO.setAdvantageSkuCodes(advantageSkuCodes);
         }
         return true;
     }
@@ -3434,6 +3452,7 @@ public class PurchaseContractServiceImpl extends ServiceImpl<PurchaseContractMap
                     .filter(item -> item.getSumTotalPriceRmb() != null)
                     .map(PurchaseContractProductModeSummaryDO::getSumTotalPriceRmb)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
+
             List<JsonAmount> totalPriceRmbList = new ArrayList<>();
             totalPriceRmbList.add(new JsonAmount()
                     .setCurrency("RMB")

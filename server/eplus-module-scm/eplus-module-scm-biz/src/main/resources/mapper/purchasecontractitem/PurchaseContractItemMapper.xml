@@ -147,7 +147,7 @@
         LEFT JOIN pms_sku s ON i.sku_code = s.code
         LEFT JOIN sms_sale_contract sc ON c.sale_contract_id = sc.id
         <where>
-            c.deleted = 0 AND i.deleted = 0
+            c.deleted = 0 AND i.deleted = 0 AND s.deleted = 0
             <!-- 辅助合同标志 -->
             <if test="req.auxiliaryFlag != null">
                 AND c.auxiliary_flag = #{req.auxiliaryFlag}
@@ -177,18 +177,6 @@
             <if test="req.withTaxPriceRmbMax != null">
                 AND JSON_EXTRACT(i.total_price_rmb, '$.amount') / NULLIF(i.quantity, 0) <![CDATA[<=]]> #{req.withTaxPriceRmbMax}
             </if>
-            <if test="req.withTaxPriceMin != null">
-                AND JSON_EXTRACT(i.with_tax_price, '$.amount') <![CDATA[>=]]> #{req.withTaxPriceMin}
-            </if>
-            <if test="req.withTaxPriceMax != null">
-                AND JSON_EXTRACT(i.with_tax_price, '$.amount') <![CDATA[<=]]> #{req.withTaxPriceMax}
-            </if>
-            <if test="req.withTaxPriceRmbMin != null">
-                AND JSON_EXTRACT(i.total_price_rmb, '$.amount') / NULLIF(i.quantity, 0) <![CDATA[>=]]> #{req.withTaxPriceRmbMin}
-            </if>
-            <if test="req.withTaxPriceRmbMax != null">
-                AND JSON_EXTRACT(i.total_price_rmb, '$.amount') / NULLIF(i.quantity, 0) <![CDATA[<=]]> #{req.withTaxPriceRmbMax}
-            </if>
             <!-- 优势产品条件：直接通过 JOIN 的 pms_sku 表筛选 -->
             <if test="req.advantageFlag != null">
                 AND s.advantage_flag = #{req.advantageFlag}
@@ -199,18 +187,6 @@
             </if>
             <if test="req.purchaseContractCode != null and req.purchaseContractCode != ''">
                 AND c.code LIKE CONCAT('%', #{req.purchaseContractCode}, '%')
-            </if>
-            <if test="req.totalAmountRangeMin != null">
-                AND JSON_EXTRACT(c.total_amount, '$.amount') <![CDATA[>=]]> #{req.totalAmountRangeMin}
-            </if>
-            <if test="req.totalAmountRangeMax != null">
-                AND JSON_EXTRACT(c.total_amount, '$.amount') <![CDATA[<=]]> #{req.totalAmountRangeMax}
-            </if>
-            <if test="req.totalAmountRmbRangeMin != null">
-                AND JSON_EXTRACT(c.total_amount_rmb, '$.amount') <![CDATA[>=]]> #{req.totalAmountRmbRangeMin}
-            </if>
-            <if test="req.totalAmountRmbRangeMax != null">
-                AND JSON_EXTRACT(c.total_amount_rmb, '$.amount') <![CDATA[<=]]> #{req.totalAmountRmbRangeMax}
             </if>
             <if test="req.totalAmountRangeMin != null">
                 AND JSON_EXTRACT(c.total_amount, '$.amount') <![CDATA[>=]]> #{req.totalAmountRangeMin}
@@ -365,7 +341,7 @@
         LEFT JOIN scm_purchase_contract c ON i.purchase_contract_id = c.id
         LEFT JOIN pms_sku s ON i.sku_code = s.code
         <where>
-            c.deleted = 0 AND i.deleted = 0
+            c.deleted = 0 AND i.deleted = 0 AND s.deleted = 0
             <!-- 辅助合同标志 -->
             <if test="req.auxiliaryFlag != null">
                 AND c.auxiliary_flag = #{req.auxiliaryFlag}

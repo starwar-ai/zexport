@@ -20,6 +20,14 @@ public class SaleContractProductExportVO {
     @Schema(description = "合同号")
     private String saleContractCode;
 
+    @ExcelProperty("报关主体")
+    @Schema(description = "报关主体")
+    private String foreignTradeCompanyName;
+
+    @ExcelProperty("交易币种")
+    @Schema(description = "交易币种")
+    private String currency;
+
     @ExcelProperty("客户PO号")
     @Schema(description = "客户PO号")
     private String custPO;
@@ -47,6 +55,10 @@ public class SaleContractProductExportVO {
     @ExcelProperty("客户货号")
     @Schema(description = "客户货号")
     private String cskuCode;
+
+    @ExcelProperty("基础产品编号")
+    @Schema(description = "基础产品编号")
+    private String basicSkuCode;
 
     @ExcelProperty("中文品名")
     @Schema(description = "中文品名")
@@ -80,6 +92,10 @@ public class SaleContractProductExportVO {
     @Schema(description = "采购员")
     private String purchaseUserNickname;
 
+    @ExcelProperty("采购员部门")
+    @Schema(description = "采购员部门")
+    private String purchaseUserDeptName;
+
     @ExcelProperty("收款方式")
     @Schema(description = "收款方式")
     private String paymentMethod;
@@ -103,6 +119,46 @@ public class SaleContractProductExportVO {
     @ExcelProperty("总额")
     @Schema(description = "总额")
     private BigDecimal totalAmount;
+
+    @ExcelProperty("销售总金额(USD)")
+    @Schema(description = "销售总金额(USD)")
+    private BigDecimal totalAmountUsd;
+
+    @ExcelProperty("采购数量")
+    @Schema(description = "采购数量")
+    private Integer purchaseQuantity;
+
+    @ExcelProperty("采购含税单价")
+    @Schema(description = "采购含税单价")
+    private BigDecimal withTaxPriceRemoveFreeAmount;
+
+    @ExcelProperty("采购总金额")
+    @Schema(description = "采购总金额")
+    private BigDecimal purchaseTotalAmount;
+
+    @ExcelProperty("真实锁定数量")
+    @Schema(description = "真实锁定数量")
+    private Integer realLockQuantity;
+
+    @ExcelProperty("锁定库存单价")
+    @Schema(description = "锁定库存单价")
+    private BigDecimal stockLockPriceAmount;
+
+    @ExcelProperty("锁定库存总金额")
+    @Schema(description = "锁定库存总金额")
+    private BigDecimal stockLockTotalPriceAmount;
+
+    @ExcelProperty("入库地点")
+    @Schema(description = "入库地点")
+    private Integer billStatus;
+
+    @ExcelProperty("待转出运数量")
+    @Schema(description = "待转出运数量")
+    private Integer pendingTransferShippedQuantity;
+
+    @ExcelProperty("待出运数量")
+    @Schema(description = "待出运数量")
+    private Integer pendingShippedQuantity;
 
     @ExcelProperty("单据状态")
     @Schema(description = "单据状态")
@@ -139,6 +195,10 @@ public class SaleContractProductExportVO {
     @ExcelProperty("录入人")
     @Schema(description = "录入人")
     private String creatorName;
+
+    @ExcelProperty("录入人部门")
+    @Schema(description = "录入人部门")
+    private String creatorDeptName;
 
     @ExcelProperty("备注")
     @Schema(description = "备注")

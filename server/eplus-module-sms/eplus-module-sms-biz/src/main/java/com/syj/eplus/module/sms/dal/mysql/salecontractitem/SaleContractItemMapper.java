@@ -147,6 +147,18 @@ public interface SaleContractItemMapper extends BaseMapperX<SaleContractItem> {
     );
 
     /**
+     * 产品模式列表查询（不分页）
+     * 用于产品维度导出，返回扁平结构明细列表
+     *
+     * @param pageReqVO 查询参数
+     * @return 明细列表
+     * @author 波波
+     */
+    List<SaleContractProductModeRespVO> selectProductModeList(
+            @Param("req") SaleContractPageReqVO pageReqVO
+    );
+
+    /**
      * 产品模式汇总查询（基于筛选后的明细）
      * 用于产品视图的汇总统计
      *

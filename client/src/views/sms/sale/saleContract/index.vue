@@ -478,7 +478,7 @@ const handleDetail = (id: number) => {
 const changeCount = ref(0)
 
 const eplusTableSchema: EplusTableSchema = {
-  getListApi: async (ps, currentTabIndex) => {
+  getListApi: async (ps, currentTabIndex?) => {
     let status = ''
     let currentTab = tabNameList.filter((item) => item.name == activeName.value)
 
@@ -520,12 +520,17 @@ const eplusTableSchema: EplusTableSchema = {
   },
   delListApi: async (id) => {},
   exportListApi: async (ps) => {
+    // 根据当前 Tab 判断导出模式：产品 Tab (index=1) 使用产品模式 queryMode=2
+    const queryMode = ps?.currentTabIndex === 1 ? 2 : 1
     let reqPath = await ExportSaleContractApi.exportExportSaleContract({
       ...ps,
-      autoFlag: activeName.value == 'auto' ? 1 : 0
+      autoFlag: activeName.value == 'auto' ? 1 : 0,
+      queryMode
     })
     return reqPath
   },
+  selection: true,
+  summary: true,
   showTabs: true,
   tabs: [
     {
@@ -962,6 +967,28 @@ const eplusTableSchema: EplusTableSchema = {
         {
           prop: 'totalSaleAmount',
           label: '销售总金额',
+          minWidth: columnWidth.m,
+          formatter: formatMoneyColumn(),
+          summary: true,
+          summarySlots: {
+            default: (data) => {
+              //-- unit:单位 number:值
+              if (!data || data.amount === null || data.amount === undefined) {
+                return {
+                  unit: data?.currency,
+                  number: 0
+                }
+              }
+              return {
+                unit: data.currency,
+                number: Number(data.amount) || 0
+              }
+            }
+          }
+        },
+        {
+          prop: 'totalSaleAmountUsd',
+          label: '销售总金额(USD)',
           minWidth: columnWidth.m,
           formatter: formatMoneyColumn(),
           summary: true,

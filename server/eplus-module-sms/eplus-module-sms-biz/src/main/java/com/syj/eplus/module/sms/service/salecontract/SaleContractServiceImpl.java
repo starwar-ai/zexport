@@ -2747,7 +2747,16 @@ public class SaleContractServiceImpl extends ServiceImpl<SaleContractMapper, Sal
             if (CollUtil.isEmpty(advantageSkuIds)) {
                 return false;
             }
-            pageReqVO.setAdvantageSkuIds(advantageSkuIds);
+            Map<Long, SkuDTO> skuDTOMap = skuApi.getSkuDTOMap(advantageSkuIds);
+            List<String> advantageSkuCodes = CollUtil.isEmpty(skuDTOMap) ? List.of() : skuDTOMap.values().stream()
+                    .map(SkuDTO::getCode)
+                    .filter(StrUtil::isNotEmpty)
+                    .distinct()
+                    .toList();
+            if (CollUtil.isEmpty(advantageSkuCodes)) {
+                return false;
+            }
+            pageReqVO.setAdvantageSkuCodes(advantageSkuCodes);
         }
         return true;
     }
@@ -3064,7 +3073,16 @@ public class SaleContractServiceImpl extends ServiceImpl<SaleContractMapper, Sal
             if (CollUtil.isEmpty(advantageSkuIds)) {
                 return Collections.emptySet();
             }
-            queryWrapper.in(SaleContractItem::getSkuId, advantageSkuIds);
+            Map<Long, SkuDTO> skuDTOMap = skuApi.getSkuDTOMap(advantageSkuIds);
+            List<String> advantageSkuCodes = CollUtil.isEmpty(skuDTOMap) ? List.of() : skuDTOMap.values().stream()
+                    .map(SkuDTO::getCode)
+                    .filter(StrUtil::isNotEmpty)
+                    .distinct()
+                    .toList();
+            if (CollUtil.isEmpty(advantageSkuCodes)) {
+                return Collections.emptySet();
+            }
+            queryWrapper.in(SaleContractItem::getSkuCode, advantageSkuCodes);
         }
 
         // 优化：只查询 contract_id 字段
@@ -9115,10 +9133,147 @@ public class SaleContractServiceImpl extends ServiceImpl<SaleContractMapper, Sal
 
     @Override
     public void exportSaleContractExcel(SaleContractPageReqVO pageReqVO, String fileName, HttpServletResponse response) throws IOException {
+        // 导出不分页
         pageReqVO.setPageSize(PageParam.PAGE_SIZE_NONE);
+
+        // 产品模式导出：按明细分页的扁平结构（queryMode=2）
+        Integer queryMode = pageReqVO.getQueryMode();
+        if (queryMode != null && queryMode == 2) {
+            List<SaleContractProductModeRespVO> records = saleContractItemMapper.selectProductModeList(pageReqVO);
+            if (CollUtil.isNotEmpty(records)) {
+                // 填充创建人信息
+                fillCreatorInfo(records, SaleContractProductModeRespVO::getCreator,
+                        SaleContractProductModeRespVO::setCreatorName,
+                        SaleContractProductModeRespVO::setCreatorDeptName);
+                // 填充外贸公司名称
+                fillProductModeForeignTradeCompanyName(records);
+                // 计算锁库单价和锁库总价
+                calcProductModeStockLockPrice(records);
+            }
+
+            List<SaleContractProductExportVO> saleContractProductList = new ArrayList<>();
+            if (CollUtil.isNotEmpty(records)) {
+                records.forEach(r -> {
+                    SaleContractProductExportVO saleContractProductExportVO = new SaleContractProductExportVO();
+
+                    // 合同相关信息
+                    saleContractProductExportVO.setSaleContractCode(r.getCode());
+                    saleContractProductExportVO.setForeignTradeCompanyName(r.getForeignTradeCompanyName());
+                    saleContractProductExportVO.setCurrency(r.getCurrency());
+                    saleContractProductExportVO.setCustName(r.getCustName());
+                    saleContractProductExportVO.setCustPO(r.getCustPo());
+                    saleContractProductExportVO.setCustCountryName(r.getCustCountryName());
+                    saleContractProductExportVO.setSettlementName(r.getSettlementName());
+                    saleContractProductExportVO.setExchangeRate(r.getExchangeRate());
+                    saleContractProductExportVO.setInputDate(r.getInputDate());
+                    saleContractProductExportVO.setCreatorName(r.getCreatorName());
+                    saleContractProductExportVO.setCreatorDeptName(r.getCreatorDeptName());
+                    saleContractProductExportVO.setCreateTime(r.getCreateTime());
+                    saleContractProductExportVO.setSignBackDate(r.getSignBackDate());
+
+                    // 业务员信息
+                    if (r.getSales() != null) {
+                        saleContractProductExportVO.setSalesNickname(r.getSales().getNickname());
+                        saleContractProductExportVO.setSalesDeptName(r.getSales().getDeptName());
+                    } else {
+                        saleContractProductExportVO.setSalesNickname(r.getSalesNickname());
+                        saleContractProductExportVO.setSalesDeptName(r.getSalesDeptName());
+                    }
+
+                    // 产品信息
+                    saleContractProductExportVO.setCskuCode(r.getCskuCode());
+                    saleContractProductExportVO.setBasicSkuCode(r.getBasicSkuCode());
+                    saleContractProductExportVO.setSkuCode(r.getSkuCode());
+                    saleContractProductExportVO.setName(r.getName());
+                    saleContractProductExportVO.setNameEng(r.getNameEng());
+                    saleContractProductExportVO.setQuantity(r.getQuantity());
+
+                    // 采购员信息
+                    if (r.getPurchaseUser() != null) {
+                        saleContractProductExportVO.setPurchaseUserNickname(r.getPurchaseUser().getNickname());
+                        saleContractProductExportVO.setPurchaseUserDeptName(r.getPurchaseUser().getDeptName());
+                    } else {
+                        saleContractProductExportVO.setPurchaseUserNickname(r.getPurchaseUserNickname());
+                        saleContractProductExportVO.setPurchaseUserDeptName(r.getPurchaseUserDeptName());
+                    }
+
+                    // 供应商信息
+                    saleContractProductExportVO.setVenderName(r.getVenderName());
+
+                    // 价格信息
+                    if (r.getUnitPrice() != null) {
+                        saleContractProductExportVO.setUnitPriceAmount(r.getUnitPrice().getCheckAmount());
+                    }
+                    if (r.getTotalSaleAmount() != null) {
+                        saleContractProductExportVO.setTotalAmount(r.getTotalSaleAmount().getCheckAmount());
+                    }
+                    if (r.getTotalSaleAmountUsd() != null) {
+                        saleContractProductExportVO.setTotalAmountUsd(r.getTotalSaleAmountUsd().getCheckAmount());
+                    }
+
+                    // 采购/锁库明细信息
+                    Integer purchaseQuantity = Objects.nonNull(r.getRealPurchaseQuantity()) ? r.getRealPurchaseQuantity() : r.getNeedPurQuantity();
+                    saleContractProductExportVO.setPurchaseQuantity(purchaseQuantity);
+                    if (r.getWithTaxPriceRemoveFree() != null) {
+                        saleContractProductExportVO.setWithTaxPriceRemoveFreeAmount(r.getWithTaxPriceRemoveFree().getCheckAmount());
+                        if (Objects.nonNull(purchaseQuantity)) {
+                            saleContractProductExportVO.setPurchaseTotalAmount(
+                                    r.getWithTaxPriceRemoveFree().getCheckAmount().multiply(new BigDecimal(purchaseQuantity))
+                            );
+                        }
+                    }
+                    saleContractProductExportVO.setRealLockQuantity(r.getRealLockQuantity());
+                    if (r.getStockLockPrice() != null) {
+                        saleContractProductExportVO.setStockLockPriceAmount(r.getStockLockPrice().getCheckAmount());
+                    }
+                    if (r.getStockLockTotalPrice() != null) {
+                        saleContractProductExportVO.setStockLockTotalPriceAmount(r.getStockLockTotalPrice().getCheckAmount());
+                    }
+                    saleContractProductExportVO.setBillStatus(r.getBillStatus());
+                    if (Objects.nonNull(r.getQuantity())) {
+                        int pendingTransfer = r.getQuantity() - (Objects.isNull(r.getTransferShippedQuantity()) ? 0 : r.getTransferShippedQuantity());
+                        int pendingShipment = r.getQuantity() - (Objects.isNull(r.getShippedQuantity()) ? 0 : r.getShippedQuantity());
+                        saleContractProductExportVO.setPendingTransferShippedQuantity(Math.max(pendingTransfer, 0));
+                        saleContractProductExportVO.setPendingShippedQuantity(Math.max(pendingShipment, 0));
+                    }
+
+                    // 状态信息
+                    if (r.getStatus() != null) {
+                        SaleContractStatusEnum statusEnum = SaleContractStatusEnum.getByValue(r.getStatus());
+                        if (statusEnum != null) {
+                            saleContractProductExportVO.setStatusName(statusEnum.getName());
+                        }
+                    }
+
+                    // 处理产品图片
+                    if (r.getMainPicture() != null) {
+                        String inputPath = r.getMainPicture().getFileUrl();
+                        try {
+                            byte[] content = fileApi.getFileContent(inputPath.substring(inputPath.lastIndexOf("get/") + 4));
+                            File inputFile = FileUtils.createTempFile(content);
+                            BufferedImage image = ImageIO.read(inputFile);
+                            Double width = Double.valueOf(image.getWidth());
+                            Double height = Double.valueOf(image.getHeight());
+                            WriteCellData<Void> voidWriteCellData = ExcelUtils.imageCells(content, width, height, 2.0, 2.0, 0, 0);
+                            saleContractProductExportVO.setProductImage(voidWriteCellData);
+                            inputFile.delete();
+                        } catch (Exception e) {
+                            logger.info("产品维度导出图片获取失败: " + e.getMessage());
+                        }
+                    }
+
+                    saleContractProductList.add(saleContractProductExportVO);
+                });
+            }
+
+            ExcelUtils.write(response, fileName + "-产品.xls", "数据", SaleContractProductExportVO.class, saleContractProductList);
+            return;
+        }
+
+        // 兼容旧导出逻辑：按是否树形结构导出
         PageResult<SaleContractRespVO> saleContractPage = getSaleContractPage(pageReqVO, true);
 
-        if (!pageReqVO.getIsTree()) {
+        if (!Boolean.TRUE.equals(pageReqVO.getIsTree())) {
             // 导出单据维度 Excel
             ExcelUtils.write(response, fileName + "-单据.xls", "数据", SaleContractRespVO.class, saleContractPage.getList());
         } else {
