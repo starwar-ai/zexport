@@ -9,8 +9,9 @@ const swaggerSpec = require('./config/swagger');
 const queryRoutes = require('./routes/query');
 const databaseRoutes = require('./routes/database');
 const commonQueriesRoutes = require('./routes/commonQueries');
-const contractRoutes = require('./routes/contracts');
+const contractRoutes = require('./routes/purchase');
 const productRoutes = require('./routes/products');
+const salesRoutes = require('./routes/sales');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 // Initialize Express app
@@ -79,6 +80,7 @@ app.use('/api/databases', databaseRoutes);
 app.use('/api/common-queries', commonQueriesRoutes);
 app.use('/api/contracts', contractRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/sales', salesRoutes);
 
 // 404 handler
 app.use(notFoundHandler);
@@ -137,6 +139,7 @@ const startServer = async () => {
       console.log(`   POST /api/contracts/calculate-detail-rmb - Calculate CNY amounts for contract details`);
       console.log(`   POST /api/contracts/recalculate-period - Recalculate RMB amounts for period`);
       console.log(`   POST /api/products/sync-advantage-flag - Sync advantage flag from base products`);
+      console.log(`   POST /api/sales/batch-set-sign-back-date - Batch set sign-back date for sales contracts`);
       console.log('\n✅ Server is ready to accept requests!\n');
     });
   } catch (error) {

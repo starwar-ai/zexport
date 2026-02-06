@@ -36,6 +36,10 @@ const options = {
         description: 'Contract operations including CNY amount calculation'
       },
       {
+        name: 'Sales',
+        description: 'Sales contract operations'
+      },
+      {
         name: 'Databases',
         description: 'Database management operations'
       },
