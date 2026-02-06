@@ -176,7 +176,7 @@ public class PurchaseContractController {
             List<PurchaseContractProductModeRespVO> records = pageResult.getList();
             List<PurchaseContractProductExportVO> exportList = CollUtil.isEmpty(records)
                     ? new ArrayList<>()
-                    : BeanUtils.toBean(records, PurchaseContractProductExportVO.class);
+                    : PurchaseContractConvert.INSTANCE.convertPurchaseContractProductExportVOList(records);
             if (CollUtil.isNotEmpty(exportList) && CollUtil.isNotEmpty(records)) {
                 for (int i = 0; i < exportList.size(); i++) {
                     PurchaseContractProductExportVO vo = exportList.get(i);

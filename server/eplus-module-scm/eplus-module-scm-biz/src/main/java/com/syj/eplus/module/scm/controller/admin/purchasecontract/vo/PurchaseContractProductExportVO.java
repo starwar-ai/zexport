@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Schema(description = "管理后台 - 采购合同产品模式导出 VO")
@@ -84,7 +85,6 @@ public class PurchaseContractProductExportVO {
     @ExcelProperty(value = "采购金额（含税总计）", converter = AmountConvert.class)
     private JsonAmount withTaxTotal;
 
-    @ExcelProperty(value = "采购金额（人民币）", converter = AmountConvert.class)
     private JsonAmount totalPriceRmb;
 
     @ExcelProperty("采购类型")
@@ -92,4 +92,8 @@ public class PurchaseContractProductExportVO {
 
     @ExcelProperty("开票通知状态")
     private Integer invoiceStatus;
+
+
+    @ExcelProperty(value = "采购合同金额（人民币）")
+    private BigDecimal totalAmountRmbAmount;
 }

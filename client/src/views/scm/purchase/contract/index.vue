@@ -757,6 +757,9 @@ const eplusTableSchema: EplusTableSchema = {
     const queryMode = ps?.currentTabIndex === 1 ? 2 : 1
     return await PurchaseContractApi.exportPurchaseContract({
       ...ps,
+      contractStatus: isNaN(Number(activeName.value)) ? '' : activeName.value,
+      confirmFlag: activeName.value === 'first' ? 0 : '',
+      autoFlag: activeName.value === 'auto' ? 1 : 0,
       queryMode
     })
   },

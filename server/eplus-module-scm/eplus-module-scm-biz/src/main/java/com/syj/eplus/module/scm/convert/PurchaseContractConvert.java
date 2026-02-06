@@ -266,4 +266,62 @@ public interface PurchaseContractConvert {
         }
     }
 
+    /**
+     * 构建采购合同产品模式导出 VO
+     * <p>
+     * 说明：产品模式响应 VO 中存在部分“对象字段 + 扁平化字段”的组合（例如：跟单员、采购员），
+     * 导出 VO 只保留扁平化字段，因此这里会参照 {@link #fillAmountSplitFields(PurchaseContractRespVO)} 的思路，
+     * 在转换后补齐扁平化字段，保证 Excel 导出展示完整。
+     *
+     * @param source 产品模式响应 VO
+     * @return 产品模式导出 VO
+     * @author 波波
+     */
+    default PurchaseContractProductExportVO convertPurchaseContractProductExportVO(PurchaseContractProductModeRespVO source) {
+        if (source == null) {
+            return null;
+        }
+        PurchaseContractProductExportVO exportVO = BeanUtils.toBean(source, PurchaseContractProductExportVO.class);
+        fillAmountSplitFields(exportVO, source);
+        return exportVO;
+    }
+
+    /**
+     * 构建采购合同产品模式导出 VO 列表
+     *
+     * @param list 产品模式响应 VO 列表
+     * @return 产品模式导出 VO 列表
+     * @author 波波
+     */
+    default List<PurchaseContractProductExportVO> convertPurchaseContractProductExportVOList(List<PurchaseContractProductModeRespVO> list) {
+        return CollectionUtils.convertList(list, this::convertPurchaseContractProductExportVO);
+    }
+
+    /**
+     * 填充产品模式导出 VO 的扁平化字段数据（参考金额拆分填充方法的处理方式）
+     *
+     * @param exportVO 导出 VO
+     * @param source   产品模式响应 VO
+     * @author 波波
+     */
+    default void fillAmountSplitFields(PurchaseContractProductExportVO exportVO, PurchaseContractProductModeRespVO source) {
+        if (exportVO == null || source == null) {
+            return;
+        }
+
+        // 跟单员姓名
+        if (source.getManager() != null) {
+            exportVO.setManagerNickname(source.getManager().getNickname());
+        }
+
+        // 采购员姓名
+        if (source.getPurchaseUser() != null) {
+            exportVO.setPurchaseUserNickname(source.getPurchaseUser().getNickname());
+        }
+        // 采购合同金额RMB拆分
+        if (source.getTotalPriceRmb() != null) {
+            exportVO.setTotalAmountRmbAmount(NumberFormatUtil.formatAmount(source.getTotalPriceRmb().getAmount()));
+        }
+    }
+
 }
